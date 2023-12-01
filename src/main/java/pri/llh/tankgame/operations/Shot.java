@@ -93,6 +93,10 @@ public class Shot implements Runnable{
                 isRunning = false;
                 break;
             }
+            //子弹击中目标
+            else if(!isRunning){
+                break;
+            }
         }
     }
 

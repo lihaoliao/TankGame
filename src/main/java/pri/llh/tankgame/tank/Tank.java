@@ -12,12 +12,14 @@ import pri.llh.tankgame.panel.GamePanel;
  * @since 1.0
  */
 public class Tank {
+    public static final int TANK_TOTAL_WIDTH = 40;
+    public static final int TANK_TOTAL_HEIGHT = 60;
     /**
-     * 坦克的横坐标
+     * 坦克的左上角横坐标
      */
     private int x;
     /**
-     * 坦克的纵坐标
+     * 坦克的左上角纵坐标
      */
     private int y;
     /**
@@ -33,6 +35,10 @@ public class Tank {
      * 坦克的子弹
      */
     private Shot shot;
+    /**
+     * 坦克的生命值
+     */
+    private int tankLife = 1;
 
     public Tank(int x, int y, Direction direction) {
         this.x = x;
@@ -50,6 +56,18 @@ public class Tank {
 
     public void setShot(Shot shot) {
         this.shot = shot;
+    }
+
+    public int getTankLife() {
+        return tankLife;
+    }
+
+    public void setTankLife(int tankLife) {
+        if (tankLife < 0){
+            this.tankLife = 0;
+        }else {
+            this.tankLife = tankLife;
+        }
     }
 
     public void shot(GamePanel gamePanel){
