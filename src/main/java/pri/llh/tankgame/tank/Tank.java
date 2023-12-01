@@ -1,6 +1,8 @@
 package pri.llh.tankgame.tank;
 
 import pri.llh.tankgame.enums.Direction;
+import pri.llh.tankgame.operations.Shot;
+import pri.llh.tankgame.panel.GamePanel;
 
 /**
  * @author LiHao Liao
@@ -27,6 +29,10 @@ public class Tank {
      * 默认为3像素
      */
     private int speed=3;
+    /**
+     * 坦克的子弹
+     */
+    private Shot shot;
 
     public Tank(int x, int y, Direction direction) {
         this.x = x;
@@ -36,6 +42,43 @@ public class Tank {
 
     public Direction getDirection() {
         return direction;
+    }
+
+    public Shot getShot() {
+        return shot;
+    }
+
+    public void setShot(Shot shot) {
+        this.shot = shot;
+    }
+
+    public void shot(GamePanel gamePanel){
+        int[] bullet = new int[2];
+        switch (direction){
+            case UP:
+                bullet[0] = (int) (x+17.5);
+                bullet[1] = y-10;
+                break;
+            case DOWN:
+                bullet[0] = (int) (x+17.5);
+                bullet[1] = y+70;
+                break;
+            case LEFT:
+                bullet[0] = x-10;
+                bullet[1] = (int) (y+17.5);
+                break;
+            case RIGHT:
+                bullet[0] = x+70;
+                bullet[1] = (int) (y+17.5);
+                break;
+            default:
+                break;
+        }
+        //TODO:同时显示多个子弹，并且考虑如何把这里的每个子弹线程区分名称
+        this.shot = new Shot(bullet, this.speed * 3, this.direction);
+        shot.getGamePanel(gamePanel);
+        Thread bulletThread = new Thread(shot);
+        bulletThread.start();
     }
 
     public void setDirection(Direction direction) {
@@ -86,5 +129,13 @@ public class Tank {
             default:
                 break;
         }
+    }
+
+    /**
+     * 判断子弹是否为空
+     * @return true or false
+     */
+    public boolean isShot(){
+        return shot!=null && shot.isRunning();
     }
 }

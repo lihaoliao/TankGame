@@ -1,6 +1,7 @@
 package pri.llh.tankgame.tank;
 
 import pri.llh.tankgame.enums.Direction;
+import pri.llh.tankgame.panel.GamePanel;
 
 /**
  * @author LiHao Liao

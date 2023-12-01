@@ -35,5 +35,8 @@ public class Game extends JFrame {
         this.setSize(screenSize.width, screenSize.height);
         this.setVisible(true);
         this.setLocationRelativeTo(null);
+        Thread panelThread = new Thread(gamePanel);
+        panelThread.setName("GamePanelThread");
+        panelThread.start();
     }
 }
