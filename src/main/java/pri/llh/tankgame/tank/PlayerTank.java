@@ -12,7 +12,8 @@ import pri.llh.tankgame.panel.GamePanel;
  */
 public class PlayerTank extends Tank {
 
-    public PlayerTank(int x, int y, Direction direction) {
-        super(x, y, direction);
+    public PlayerTank(int x, int y, Direction direction, GamePanel gamePanel) {
+        super(x, y, direction, gamePanel);
     }
+
 }

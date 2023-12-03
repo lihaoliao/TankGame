@@ -2,6 +2,7 @@ package pri.llh.tankgame.panel;
 
 import pri.llh.tankgame.enums.Direction;
 import pri.llh.tankgame.operations.Boom;
+import pri.llh.tankgame.operations.Bullet;
 import pri.llh.tankgame.tank.EnemyTank;
 import pri.llh.tankgame.tank.PlayerTank;
 import pri.llh.tankgame.utils.GameJudgeUtils;
@@ -11,6 +12,8 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicLong;
+
 
 /**
  * @author LiHao Liao
@@ -32,11 +35,16 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
     /**
      * 敌人数量，默认为3
      */
-    int enemies = 3;
+    int enemies = 10;
     Vector<Boom> booms = new Vector<>();
     Image boom1;
     Image boom2;
     Image boom3;
+
+    /**
+     * 玩家子弹发射时间控制变量
+     */
+    private AtomicLong lastShotTime = new AtomicLong(0);
 
     /**
      * 面板里面坦克初始化
@@ -45,11 +53,11 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
         //玩家出生的位置
-        playerTank = new PlayerTank(screenWidth/2, (int) (screenHeight*0.8),Direction.UP);
+        playerTank = new PlayerTank(screenWidth/2, (int) (screenHeight*0.8),Direction.UP,this);
 //        playerTank = new PlayerTank(screenWidth-1250, (int) (screenHeight*0.8),Direction.UP);
         //敌人坦克的数量以及出生位置设置
         for (int i = 0; i < enemies; i++) {
-            enemyTanks.add(new EnemyTank(((i+1)*100),0,Direction.DOWN));
+            enemyTanks.add(new EnemyTank(((i+1)*100),0,Direction.DOWN,this));
         }
         boom1 = Toolkit.getDefaultToolkit().getImage("src/main/resources/image/boom1.gif");
         boom2 = Toolkit.getDefaultToolkit().getImage("src/main/resources/image/boom2.gif");
@@ -66,7 +74,9 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
         //默认是黑色
         g.fillRect(0,0,this.screenWidth,this.screenHeight);
         //画玩家坦克
-        drawTank(playerTank.getX(),playerTank.getY(),g,playerTank.getDirection(),2);
+        if(playerTank != null && playerTank.getTankLife() > 0) {
+            drawTank(playerTank.getX(), playerTank.getY(), g, playerTank.getDirection(), 2);
+        }
         //画玩家子弹
         if(playerTank.isShot()) {
             drawBullet(g, playerTank);
@@ -74,20 +84,25 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
 
         //画敌人的坦克并且装子弹
         for (int i = 0;i<enemyTanks.size();i++) {
+            EnemyTank enemyTank = enemyTanks.get(i);
             //敌人是否发射子弹
-            if(enemyTanks.get(i).isShot()) {
-                drawBullet(g, enemyTanks.get(i));
+            if(enemyTank.isShot()) {
+                drawBullet(g, enemyTank);
             }
-            if (enemyTanks.get(i).getTankLife()>0){
-                drawTank(enemyTanks.get(i).getX(),enemyTanks.get(i).getY(),g,enemyTanks.get(i).getDirection(),1);
+            if (enemyTank.getTankLife()>0){
+                drawTank(enemyTank.getX(),enemyTank.getY(),g,enemyTank.getDirection(),1);
             }else {
                 enemyTanks.remove(i);
             }
+            Thread tankThread = new Thread(enemyTank);
+            tankThread.start();
         }
+
         //敌人发射子弹的频率
         for (int i = 0;i<enemyTanks.size();i++) {
+            EnemyTank enemyTank = enemyTanks.get(i);
             if(Math.random() < 0.05) {
-                enemyTanks.get(i).shot(this);
+                enemyTank.shot();
             }
         }
 
@@ -204,17 +219,39 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
 
         //玩家射击监听
         if (e.getKeyCode()==KeyEvent.VK_J){
-            playerTank.shot(this);
+            long currentTimeMillis = System.currentTimeMillis();
+            if(System.currentTimeMillis() - lastShotTime.get() >= 1000){
+                lastShotTime.set(currentTimeMillis);
+                playerTank.shot();
+            }
         }
     }
 
     public void drawBullet(Graphics g, PlayerTank playerTank){
         g.setColor(Color.white);
-        g.fillOval(playerTank.getShot().getBullet()[0],playerTank.getShot().getBullet()[1],5,5);
+        Vector<Bullet> bulletVector = playerTank.getBulletVector();
+        synchronized (bulletVector) {
+            for (int i = 0; i < bulletVector.size(); i++) {
+                Bullet bullet = bulletVector.get(i);
+                if (!bullet.isRunning()) {
+                    bulletVector.remove(i);
+                }
+                g.fillOval(bullet.getBullet()[0], bullet.getBullet()[1], 5, 5);
+            }
+        }
     }
     public void drawBullet(Graphics g,EnemyTank enemyTank){
         g.setColor(Color.white);
-        g.fillOval(enemyTank.getShot().getBullet()[0],enemyTank.getShot().getBullet()[1],5,5);
+        Vector<Bullet> bulletVector = enemyTank.getBulletVector();
+        synchronized (bulletVector) {
+            for (int i = 0; i < bulletVector.size(); i++) {
+                Bullet bullet = bulletVector.get(i);
+                if (!bullet.isRunning()) {
+                    bulletVector.remove(i);
+                }
+                g.fillOval(bullet.getBullet()[0], bullet.getBullet()[1], 5, 5);
+            }
+        }
     }
 
     @Override
@@ -242,11 +279,23 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
             if (playerTank.isShot()){
                 for (int i = 0;i<enemyTanks.size();i++) {
                     EnemyTank enemyTank = enemyTanks.get(i);
-                    boolean isHitEnemies = GameJudgeUtils.hitJudge(playerTank.getShot(),enemyTank);
-                    if (isHitEnemies){
-                        booms.add(new Boom(enemyTank.getX(),enemyTank.getY()));
+                    Vector<Bullet> bulletVector = this.playerTank.getBulletVector();
+                    for (int j = 0; j < bulletVector.size(); j++) {
+                        boolean isHitEnemies = GameJudgeUtils.hitJudge(bulletVector.get(j),enemyTank);
+                        if (isHitEnemies){
+                            booms.add(new Boom(enemyTank.getX(),enemyTank.getY()));
+                        }
                     }
-                    //GameJudgeUtils.hitJudge(enemyTanks.get(i).getShot(),playerTank);
+                }
+            }
+            for (int i = 0; i < enemyTanks.size(); i++) {
+                EnemyTank enemyTank = enemyTanks.get(i);
+                Vector<Bullet> bulletVector = enemyTank.getBulletVector();
+                for (int j = 0; j < bulletVector.size(); j++) {
+                    boolean isHitEnemies = GameJudgeUtils.hitJudge(bulletVector.get(j),this.playerTank);
+                    if (isHitEnemies){
+                        booms.add(new Boom(this.playerTank.getX(),this.playerTank.getY()));
+                    }
                 }
             }
             this.repaint();

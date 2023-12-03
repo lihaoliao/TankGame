@@ -10,7 +10,7 @@ import pri.llh.tankgame.panel.GamePanel;
  * @date 2023/12/01 09:31
  * @since 1.0
  */
-public class Shot implements Runnable{
+public class Bullet implements Runnable{
     /**
      * 子弹的横纵坐标
      */
@@ -58,14 +58,14 @@ public class Shot implements Runnable{
         this.direction = direction;
     }
 
-    public Shot(int[] bullet, int speed, Direction direction) {
+    public Bullet(int[] bullet, int speed, Direction direction) {
         this.bullet = bullet;
         this.speed = speed;
         this.direction = direction;
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
         while (true){
             switch (direction){
                 case UP:
