@@ -78,6 +78,7 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
             drawTank(playerTank.getX(), playerTank.getY(), g, playerTank.getDirection(), 2);
         }
         //画玩家子弹
+        assert playerTank != null;
         if(playerTank.isShot()) {
             drawBullet(g, playerTank);
         }
@@ -89,6 +90,7 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
             if(enemyTank.isShot()) {
                 drawBullet(g, enemyTank);
             }
+            //判断敌人坦克是否已经死亡
             if (enemyTank.getTankLife()>0){
                 drawTank(enemyTank.getX(),enemyTank.getY(),g,enemyTank.getDirection(),1);
             }else {
@@ -226,7 +228,14 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
             }
         }
     }
-
+    /**
+     * 绘制玩家坦克的子弹。
+     * 此方法遍历玩家坦克的子弹向量（Vector），并为每个正在运动的子弹绘制一个圆形代表其当前位置。
+     * 如果子弹不再运动（例如击中目标或超出界面），则从向量中移除该子弹。
+     *
+     * @param g 图形上下文环境，用于在面板上绘制图形。
+     * @param playerTank 玩家的坦克对象，包含子弹的信息。
+     */
     public void drawBullet(Graphics g, PlayerTank playerTank){
         g.setColor(Color.white);
         Vector<Bullet> bulletVector = playerTank.getBulletVector();
@@ -240,6 +249,15 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
             }
         }
     }
+
+    /**
+     * 绘制敌方坦克的子弹。
+     * 此方法遍历敌方坦克的子弹向量（Vector），并为每个正在运动的子弹绘制一个圆形代表其当前位置。
+     * 如果子弹不再运动（例如击中目标或超出界面），则从向量中移除该子弹。
+     *
+     * @param g 图形上下文环境，用于在面板上绘制图形。
+     * @param enemyTank 敌方坦克对象，包含子弹的信息。
+     */
     public void drawBullet(Graphics g,EnemyTank enemyTank){
         g.setColor(Color.white);
         Vector<Bullet> bulletVector = enemyTank.getBulletVector();
@@ -267,6 +285,10 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
         return screenHeight;
     }
 
+    public Vector<EnemyTank> getEnemyTanks() {
+        return enemyTanks;
+    }
+
     @Override
     public void run() {
         while (true) {
@@ -288,13 +310,16 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
                     }
                 }
             }
-            for (int i = 0; i < enemyTanks.size(); i++) {
-                EnemyTank enemyTank = enemyTanks.get(i);
-                Vector<Bullet> bulletVector = enemyTank.getBulletVector();
-                for (int j = 0; j < bulletVector.size(); j++) {
-                    boolean isHitEnemies = GameJudgeUtils.hitJudge(bulletVector.get(j),this.playerTank);
-                    if (isHitEnemies){
-                        booms.add(new Boom(this.playerTank.getX(),this.playerTank.getY()));
+            //敌方是否击中玩家
+            if(this.playerTank.getTankLife() > 0) {
+                for (int i = 0; i < enemyTanks.size(); i++) {
+                    EnemyTank enemyTank = enemyTanks.get(i);
+                    Vector<Bullet> bulletVector = enemyTank.getBulletVector();
+                    for (int j = 0; j < bulletVector.size(); j++) {
+                        boolean isHitEnemies = GameJudgeUtils.hitJudge(bulletVector.get(j), this.playerTank);
+                        if (isHitEnemies) {
+                            booms.add(new Boom(this.playerTank.getX(), this.playerTank.getY()));
+                        }
                     }
                 }
             }

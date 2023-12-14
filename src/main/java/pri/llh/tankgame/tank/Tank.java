@@ -196,4 +196,16 @@ public class Tank {
     public boolean isShot(){
         return this.bulletVector.size() > 0;
     }
+
+    public void changeDirection(){
+        if (direction == Direction.UP){
+            direction = Direction.DOWN;
+        }else if (direction == Direction.DOWN){
+            direction = Direction.UP;
+        }else if (direction == Direction.LEFT){
+            direction = Direction.RIGHT;
+        }else {
+            direction = Direction.LEFT;
+        }
+    }
 }
