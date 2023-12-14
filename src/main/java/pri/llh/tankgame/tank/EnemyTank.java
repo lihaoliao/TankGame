@@ -14,8 +14,9 @@ import pri.llh.tankgame.utils.GameJudgeUtils;
 public class EnemyTank extends Tank implements Runnable {
     private long lastShotTime;
 
-    public EnemyTank(int x, int y, Direction direction, GamePanel gamePanel) {
-        super(x, y, direction, gamePanel);
+
+    public EnemyTank(int x, int y, Direction direction, GamePanel gamePanel, int type) {
+        super(x, y, direction, gamePanel, type);
         this.lastShotTime = System.currentTimeMillis();
     }
 

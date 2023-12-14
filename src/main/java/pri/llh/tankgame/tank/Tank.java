@@ -46,6 +46,37 @@ public class Tank {
      * 多颗子弹的集合
      */
     private Vector<Bullet> bulletVector = new Vector<>();
+    /**
+     * 坦克的类型
+     */
+    private int type;
+
+    public Tank(int x, int y, Direction direction, GamePanel gamePanel, int type) {
+        this.x = x;
+        this.y = y;
+        this.direction = direction;
+        this.gamePanel = gamePanel;
+        this.type = type;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public Tank(int x, int y, Direction direction, int speed, int tankLife, GamePanel gamePanel, Vector<Bullet> bulletVector, int type) {
+        this.x = x;
+        this.y = y;
+        this.direction = direction;
+        this.speed = speed;
+        this.tankLife = tankLife;
+        this.gamePanel = gamePanel;
+        this.bulletVector = bulletVector;
+        this.type = type;
+    }
 
     public Tank(int x, int y, Direction direction, GamePanel gamePanel) {
         this.x = x;
@@ -63,9 +94,9 @@ public class Tank {
     }
 
     public void setTankLife(int tankLife) {
-        if (tankLife < 0){
+        if (tankLife < 0) {
             this.tankLife = 0;
-        }else {
+        } else {
             this.tankLife = tankLife;
         }
     }
@@ -81,29 +112,29 @@ public class Tank {
     /**
      * 坦克射击子弹方法
      */
-    public void shot(){
+    public void shot() {
         int[] bulletCoordinate = new int[2];
-        switch (direction){
+        switch (direction) {
             case UP:
-                bulletCoordinate[0] = (int) (x+17.5);
-                bulletCoordinate[1] = y-10;
+                bulletCoordinate[0] = (int) (x + 17.5);
+                bulletCoordinate[1] = y - 10;
                 break;
             case DOWN:
-                bulletCoordinate[0] = (int) (x+17.5);
-                bulletCoordinate[1] = y+70;
+                bulletCoordinate[0] = (int) (x + 17.5);
+                bulletCoordinate[1] = y + 70;
                 break;
             case LEFT:
-                bulletCoordinate[0] = x-10;
-                bulletCoordinate[1] = (int) (y+17.5);
+                bulletCoordinate[0] = x - 10;
+                bulletCoordinate[1] = (int) (y + 17.5);
                 break;
             case RIGHT:
-                bulletCoordinate[0] = x+70;
-                bulletCoordinate[1] = (int) (y+17.5);
+                bulletCoordinate[0] = x + 70;
+                bulletCoordinate[1] = (int) (y + 17.5);
                 break;
             default:
                 break;
         }
-        if(bulletVector.size() >= 5 ){
+        if (bulletVector.size() >= 5) {
             return;
         }
         bulletVector.add(new Bullet(bulletCoordinate, this.speed * 3, this.direction));
@@ -154,33 +185,33 @@ public class Tank {
     /**
      * 坦克移动以及边界控制
      */
-    public void move(){
-        switch (getDirection()){
+    public void move() {
+        switch (getDirection()) {
             case UP:
-                if (y-speed>0) {
+                if (y - speed > 0) {
                     y -= speed;
-                }else {
+                } else {
                     setDirection(Direction.DOWN);
                 }
                 break;
             case DOWN:
-                if(y+speed+Tank.TANK_TOTAL_HEIGHT < getGamePanel().getScreenHeight()) {
+                if (y + speed + Tank.TANK_TOTAL_HEIGHT < getGamePanel().getScreenHeight()) {
                     y += speed;
-                }else {
+                } else {
                     setDirection(Direction.UP);
                 }
                 break;
             case LEFT:
-                if(x-speed>0) {
+                if (x - speed > 0) {
                     x -= speed;
-                }else {
+                } else {
                     setDirection(Direction.RIGHT);
                 }
                 break;
             case RIGHT:
-                if(x+speed+Tank.TANK_TOTAL_HEIGHT < getGamePanel().getScreenWidth()) {
+                if (x + speed + Tank.TANK_TOTAL_HEIGHT < getGamePanel().getScreenWidth()) {
                     x += speed;
-                }else {
+                } else {
                     setDirection(Direction.LEFT);
                 }
                 break;
@@ -191,20 +222,21 @@ public class Tank {
 
     /**
      * 判断子弹是否为空
+     *
      * @return true or false
      */
-    public boolean isShot(){
+    public boolean isShot() {
         return this.bulletVector.size() > 0;
     }
 
-    public void changeDirection(){
-        if (direction == Direction.UP){
+    public void changeDirection() {
+        if (direction == Direction.UP) {
             direction = Direction.DOWN;
-        }else if (direction == Direction.DOWN){
+        } else if (direction == Direction.DOWN) {
             direction = Direction.UP;
-        }else if (direction == Direction.LEFT){
+        } else if (direction == Direction.LEFT) {
             direction = Direction.RIGHT;
-        }else {
+        } else {
             direction = Direction.LEFT;
         }
     }
