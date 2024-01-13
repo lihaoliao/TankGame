@@ -1,6 +1,5 @@
 package pri.llh.tankgame;
 
-import jdk.nashorn.internal.ir.CallNode;
 import pri.llh.tankgame.operations.Recorder;
 import pri.llh.tankgame.panel.GamePanel;
 
@@ -30,8 +29,13 @@ public class Game extends JFrame {
      * 窗口相关参数设置
      */
     public Game() {
-        System.out.println("请选择:1.新游戏 2:继续游戏");
-        String selection = scanner.next();
+//        System.out.println("请选择:1.新游戏 2:继续游戏");
+//        String selection = scanner.next();
+        String selection = "1";
+        while (!"1".equals(selection) && !"2".equals(selection)){
+            System.out.println("请选择:1.新游戏 2:继续游戏");
+            selection = scanner.next();
+        }
         Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
         Dimension screenSize = defaultToolkit.getScreenSize();
         screenSize.width *= 0.75;

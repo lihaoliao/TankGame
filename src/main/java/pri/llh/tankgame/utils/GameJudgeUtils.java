@@ -1,6 +1,7 @@
 package pri.llh.tankgame.utils;
 
 import pri.llh.tankgame.enums.Direction;
+import pri.llh.tankgame.items.Wall;
 import pri.llh.tankgame.operations.Bullet;
 import pri.llh.tankgame.tank.EnemyTank;
 import pri.llh.tankgame.tank.Tank;
@@ -21,7 +22,7 @@ public class GameJudgeUtils {
      * @param bullet 射出的子弹
      * @param tank   被判定的目标
      */
-    public static boolean hitJudge(Bullet bullet, Tank tank) {
+    public static boolean hitTankJudge(Bullet bullet, Tank tank) {
         int bulletX = bullet.getBullet()[0];
         int bulletY = bullet.getBullet()[1];
         Direction tankDirection = tank.getDirection();
@@ -190,5 +191,18 @@ public class GameJudgeUtils {
             return resultTank;
         }
         return null;
+    }
+
+    public static boolean hitWallJudge(Bullet bullet, Wall wall){
+        int bulletX = bullet.getBullet()[0];
+        int bulletY = bullet.getBullet()[1];
+        if (bulletX >= wall.getX() && bulletX <= wall.getX()+wall.getWeight() && bulletY >= wall.getY() && bulletY <= wall.getY()+wall.getHeight()) {
+            bullet.setRunning(false);
+            if (wall.isDestructible()){
+                wall.setExist(false);
+            }
+            return true;
+        }
+        return false;
     }
 }

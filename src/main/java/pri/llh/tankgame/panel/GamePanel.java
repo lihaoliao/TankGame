@@ -1,10 +1,15 @@
 package pri.llh.tankgame.panel;
 
 import pri.llh.tankgame.enums.Direction;
+import pri.llh.tankgame.items.IndestructibleWall;
+import pri.llh.tankgame.items.NormalWall;
+import pri.llh.tankgame.items.Wall;
 import pri.llh.tankgame.operations.Boom;
 import pri.llh.tankgame.operations.Bullet;
+import pri.llh.tankgame.operations.Recorder;
 import pri.llh.tankgame.tank.EnemyTank;
 import pri.llh.tankgame.tank.PlayerTank;
+import pri.llh.tankgame.tank.TankNode;
 import pri.llh.tankgame.utils.GameJudgeUtils;
 
 import javax.swing.*;
@@ -36,6 +41,11 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
      * 敌人数量，默认为3
      */
     int enemies = 10;
+    /**
+     * 用于记录上局游戏的Vector
+     */
+    Vector<TankNode> tankNodes = new Vector<>();
+    Vector<Wall> wallList = new Vector<>();
     Vector<Boom> booms = new Vector<>();
     Image boom1;
     Image boom2;
@@ -49,15 +59,38 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
     /**
      * 面板里面坦克初始化
      */
-    public GamePanel(int screenWidth, int screenHeight) {
+    public GamePanel(int screenWidth, int screenHeight, String selection) {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
+        Recorder.setEnemyTanks(this.enemyTanks);
+        tankNodes = Recorder.recoverRecord();
         //玩家出生的位置
-        playerTank = new PlayerTank(screenWidth/2, (int) (screenHeight*0.8),Direction.UP,this);
-//        playerTank = new PlayerTank(screenWidth-1250, (int) (screenHeight*0.8),Direction.UP);
-        //敌人坦克的数量以及出生位置设置
-        for (int i = 0; i < enemies; i++) {
-            enemyTanks.add(new EnemyTank(((i+1)*100),0,Direction.DOWN,this));
+        playerTank = new PlayerTank(screenWidth/2, (int) (screenHeight*0.8),Direction.UP,this,2);
+        //        playerTank = new PlayerTank(screenWidth-1250, (int) (screenHeight*0.8),Direction.UP);
+        if ("1".equals(selection)) {
+            Recorder.setPlayerOnePoints(0);
+            //敌人坦克的数量以及出生位置设置
+            for (int i = 0; i < enemies; i++) {
+                enemyTanks.add(new EnemyTank(((i + 1) * 100), 0, Direction.DOWN, this, 1));
+            }
+        } else if ("2".equals(selection)) {
+            for (int i = 0; i < tankNodes.size(); i++) {
+                TankNode tankNode = tankNodes.get(i);
+                Direction direction = null;
+                if ("UP".equals(tankNode.getDirection())) {
+                    direction = Direction.UP;
+                }else if ("DOWN".equals(tankNode.getDirection())){
+                    direction = Direction.DOWN;
+                }else if("LEFT".equals(tankNode.getDirection())){
+                    direction = Direction.LEFT;
+                }else if("RIGHT".equals(tankNode.getDirection())){
+                    direction = Direction.RIGHT;
+                }
+                EnemyTank enemyTank = new EnemyTank(tankNode.getX(), tankNode.getY(), direction, this, tankNode.getType());
+                enemyTank.setTankLife(tankNode.getTankLife());
+                enemyTank.setSpeed(tankNode.getSpeed());
+                enemyTanks.add(enemyTank);
+            }
         }
         boom1 = Toolkit.getDefaultToolkit().getImage("src/main/resources/image/boom1.gif");
         boom2 = Toolkit.getDefaultToolkit().getImage("src/main/resources/image/boom2.gif");
@@ -65,7 +98,7 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
     }
 
     /**
-     * 绘制面板以及坦克
+     * 绘制面板以及其他相关组件
      * @param g
      */
     @Override
@@ -73,32 +106,21 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
         super.paint(g);
         //默认是黑色
         g.fillRect(0,0,this.screenWidth,this.screenHeight);
+        showInfo(g);
+
         //画玩家坦克
+        //TODO:添加玩家2
         if(playerTank != null && playerTank.getTankLife() > 0) {
-            drawTank(playerTank.getX(), playerTank.getY(), g, playerTank.getDirection(), 2);
+            drawTank(playerTank.getX(), playerTank.getY(), g, playerTank.getDirection(), playerTank.getType());
         }
+
         //画玩家子弹
         assert playerTank != null;
         if(playerTank.isShot()) {
             drawBullet(g, playerTank);
         }
 
-        //画敌人的坦克并且装子弹
-        for (int i = 0;i<enemyTanks.size();i++) {
-            EnemyTank enemyTank = enemyTanks.get(i);
-            //敌人是否发射子弹
-            if(enemyTank.isShot()) {
-                drawBullet(g, enemyTank);
-            }
-            //判断敌人坦克是否已经死亡
-            if (enemyTank.getTankLife()>0){
-                drawTank(enemyTank.getX(),enemyTank.getY(),g,enemyTank.getDirection(),1);
-            }else {
-                enemyTanks.remove(i);
-            }
-            Thread tankThread = new Thread(enemyTank);
-            tankThread.start();
-        }
+        drawEnemyTankAndBullet(g);
 
         //敌人发射子弹的频率
         for (int i = 0;i<enemyTanks.size();i++) {
@@ -108,26 +130,98 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
             }
         }
 
-        //画爆炸效果
+        drawBoom(g);
+
+        drawWall(g);
+
+    }
+
+    private boolean init = true;
+
+    /**
+     * 绘制墙体
+     * TODO:根据关卡绘制不同的墙体
+     * @param g
+     */
+    private void drawWall(Graphics g) {
+        int x = screenWidth/2;
+        int y = screenHeight/2;
+        if(init) {
+            for (int i = 0; i < 10; i++) {
+                NormalWall wall = new NormalWall(x, y);
+                wallList.add(wall);
+                x += wall.getWeight();
+            }
+            for (int i = 0; i < 10; i++) {
+                IndestructibleWall wall = new IndestructibleWall(x, y);
+                wall.setDestructible(false);
+                wallList.add(wall);
+                x += wall.getWeight();
+            }
+            init = false;
+        }
+        for (int i = 0; i < wallList.size(); i++) {
+            Wall wall = wallList.get(i);
+            if(wall.isExist()) {
+                if(wall instanceof NormalWall) {
+                    g.setColor(Color.orange);
+                }
+                if(wall instanceof IndestructibleWall){
+                    g.setColor(Color.lightGray);
+                }
+                g.fill3DRect(wall.getX(), wall.getY(), wall.getHeight(), wall.getWeight(), true);
+            }else {
+                wallList.remove(i);
+            }
+        }
+    }
+
+    /**
+     * 画敌人的坦克并且装子弹
+     * @param g
+     */
+    private void drawEnemyTankAndBullet(Graphics g) {
+        for (int i = 0;i<enemyTanks.size();i++) {
+            EnemyTank enemyTank = enemyTanks.get(i);
+            //敌人是否发射子弹
+            if(enemyTank.isShot()) {
+                drawBullet(g, enemyTank);
+            }
+            //判断敌人坦克是否已经死亡
+            if (enemyTank.getTankLife()>0){
+                drawTank(enemyTank.getX(),enemyTank.getY(), g,enemyTank.getDirection(),enemyTank.getType());
+            }else {
+                enemyTanks.remove(i);
+            }
+            Thread tankThread = new Thread(enemyTank);
+            tankThread.start();
+        }
+    }
+
+    /**
+     * 画爆炸效果
+     * @param g
+     */
+    private void drawBoom(Graphics g) {
         for (int i = 0; i < booms.size(); i++) {
             Boom boom = booms.get(i);
             if (boom.getLife() > 6){
-                g.drawImage(boom1, boom.getX(), boom.getY(), 60,60,null);
+                g.drawImage(boom1, boom.getX(), boom.getY(), 40,40,null);
             }else if (boom.getLife() > 3){
-                g.drawImage(boom2, boom.getX(), boom.getY(), 60,60,null);
+                g.drawImage(boom2, boom.getX(), boom.getY(), 40,40,null);
             }else {
-                g.drawImage(boom3, boom.getX(), boom.getY(), 60,60,null);
+                g.drawImage(boom3, boom.getX(), boom.getY(), 40,40,null);
             }
             boom.lifeDown();
             if (boom.getLife() <= 0){
                 booms.remove(i);
             }
         }
-
     }
 
     /**
      * 坦克的初始化以及重绘
+     * TODO:设计更多种类的坦克
      * @param x 坦克左上角x坐标
      * @param y 坦克左上角y坐标
      * @param g
@@ -137,11 +231,11 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
     public void drawTank(int x, int y, Graphics g, Direction direction,int type) {
 
         switch (type){
-            //enemies
+            //enemies 普通版本
             case 1:
                 g.setColor(Color.RED);
                 break;
-            //player
+            //player 玩家1
             case 2:
                 g.setColor(Color.cyan);
                 break;
@@ -272,6 +366,14 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
         }
     }
 
+    public void showInfo(Graphics g){
+        g.setColor(Color.black);
+        Font font = new Font("宋体",Font.BOLD,25);
+        g.setFont(font);
+        g.drawString("玩家1分数: " + Recorder.getPlayerOnePoints(), screenWidth, (int) (screenHeight * 0.1));
+        g.drawString("玩家2分数: ", screenWidth, (int) (screenHeight * 0.2));
+    }
+
     @Override
     public void keyReleased(KeyEvent e) {
 
@@ -298,30 +400,54 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
                 e.printStackTrace();
             }
             //判断玩家是否击中敌方坦克以及敌方是否击中玩家坦克
+            //判断玩家是否击中墙体
             if (playerTank.isShot()){
                 for (int i = 0;i<enemyTanks.size();i++) {
                     EnemyTank enemyTank = enemyTanks.get(i);
                     Vector<Bullet> bulletVector = this.playerTank.getBulletVector();
                     for (int j = 0; j < bulletVector.size(); j++) {
-                        boolean isHitEnemies = GameJudgeUtils.hitJudge(bulletVector.get(j),enemyTank);
+                        boolean isHitEnemies = GameJudgeUtils.hitTankJudge(bulletVector.get(j),enemyTank);
                         if (isHitEnemies){
+                            Recorder.addPlayerOnePoints(enemyTank);
                             booms.add(new Boom(enemyTank.getX(),enemyTank.getY()));
                         }
                     }
                 }
+                for (int i = 0; i < wallList.size(); i++) {
+                    Wall wall = wallList.get(i);
+                    Vector<Bullet> bulletVector = this.playerTank.getBulletVector();
+                    for (int j = 0; j < bulletVector.size(); j++) {
+                        boolean isHitWall = GameJudgeUtils.hitWallJudge(bulletVector.get(j),wall);
+                        if (isHitWall){
+                            booms.add(new Boom(wall.getX(),wall.getY()));
+                        }
+                    }
+                }
             }
+
             //敌方是否击中玩家
+            //判断敌方是否击中墙体
             if(this.playerTank.getTankLife() > 0) {
                 for (int i = 0; i < enemyTanks.size(); i++) {
                     EnemyTank enemyTank = enemyTanks.get(i);
                     Vector<Bullet> bulletVector = enemyTank.getBulletVector();
                     for (int j = 0; j < bulletVector.size(); j++) {
-                        boolean isHitEnemies = GameJudgeUtils.hitJudge(bulletVector.get(j), this.playerTank);
+                        boolean isHitEnemies = GameJudgeUtils.hitTankJudge(bulletVector.get(j), this.playerTank);
                         if (isHitEnemies) {
                             booms.add(new Boom(this.playerTank.getX(), this.playerTank.getY()));
                         }
                     }
+                    for (int j = 0; j < wallList.size(); j++) {
+                        Wall wall = wallList.get(j);
+                        for (int k = 0; k < bulletVector.size(); k++) {
+                            boolean isHitWall = GameJudgeUtils.hitWallJudge(bulletVector.get(k),wall);
+                            if (isHitWall){
+                                booms.add(new Boom(wall.getX(),wall.getY()));
+                            }
+                        }
+                    }
                 }
+
             }
             this.repaint();
         }

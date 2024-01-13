@@ -54,7 +54,7 @@ public class Recorder {
 
     /**
      * 信息记录方法
-     * TODO:添加玩家坐标
+     * TODO:添加玩家坐标用于恢复游戏
      * @throws IOException++
      */
     public static void keepRecord() throws IOException {
