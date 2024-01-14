@@ -1,6 +1,7 @@
 package pri.llh.tankgame.operations;
 
 import pri.llh.tankgame.tank.EnemyTank;
+import pri.llh.tankgame.tank.PlayerTank;
 import pri.llh.tankgame.tank.Tank;
 import pri.llh.tankgame.tank.TankNode;
 
@@ -22,6 +23,15 @@ public class Recorder {
     private static BufferedReader bufferedReader = null;
     private static String recordPath = "src/main/resources/record/record.txt";
     private static Vector<EnemyTank> enemyTanks = null;
+    private static Vector<PlayerTank> playerTanks = null;
+
+    public static Vector<PlayerTank> getPlayerTanks() {
+        return playerTanks;
+    }
+
+    public static void setPlayerTanks(Vector<PlayerTank> playerTanks) {
+        Recorder.playerTanks = playerTanks;
+    }
 
     /**
      * 保存敌人坦克信息
@@ -54,13 +64,13 @@ public class Recorder {
 
     /**
      * 信息记录方法
-     * TODO:添加玩家坐标用于恢复游戏
      * @throws IOException++
      */
     public static void keepRecord() throws IOException {
         bufferedWriter = new BufferedWriter(new FileWriter(recordPath));
         bufferedWriter.write(String.valueOf(playerOnePoints));
         bufferedWriter.newLine();
+        bufferedWriter.flush();
 //        bufferedWriter.write(playerTwoPoints);
         //遍历敌人坦克的Vector
         for (int i = 0; i < enemyTanks.size(); i++) {
@@ -72,6 +82,19 @@ public class Recorder {
                         " " + enemyTank.getType() + " " + enemyTank.getSpeed();
                 bufferedWriter.write(record);
                 bufferedWriter.newLine();
+                bufferedWriter.flush();
+            }
+        }
+        for (int i = 0; i < playerTanks.size(); i++) {
+            PlayerTank playerTank = playerTanks.get(i);
+            if(playerTank.getTankLife() > 0){
+                //保存信息
+                String record = playerTank.getX() + " " + playerTank.getY() + " " +
+                        playerTank.getDirection() + " " + playerTank.getTankLife() +
+                        " " + playerTank.getType() + " " + playerTank.getSpeed();
+                bufferedWriter.write(record);
+                bufferedWriter.newLine();
+                bufferedWriter.flush();
             }
         }
         if (bufferedWriter != null) {
@@ -79,6 +102,10 @@ public class Recorder {
         }
     }
 
+    /**
+     * 恢复游戏记录,获取坦克坐标
+     * @return
+     */
     public static Vector<TankNode> recoverRecord() {
         try {
             bufferedReader = new BufferedReader(new FileReader(recordPath));

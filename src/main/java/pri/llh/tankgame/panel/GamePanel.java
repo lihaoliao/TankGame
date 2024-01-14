@@ -38,6 +38,10 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
      */
     Vector<EnemyTank> enemyTanks = new Vector<>();
     /**
+     * 玩家坦克
+     */
+    Vector<PlayerTank> playerTanks = new Vector<>();
+    /**
      * 敌人数量，默认为3
      */
     int enemies = 10;
@@ -63,11 +67,13 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
         Recorder.setEnemyTanks(this.enemyTanks);
+        Recorder.setPlayerTanks(this.playerTanks);
         tankNodes = Recorder.recoverRecord();
-        //玩家出生的位置
-        playerTank = new PlayerTank(screenWidth/2, (int) (screenHeight*0.8),Direction.UP,this,2);
-        //        playerTank = new PlayerTank(screenWidth-1250, (int) (screenHeight*0.8),Direction.UP);
+        //playerTank = new PlayerTank(screenWidth-1250, (int) (screenHeight*0.8),Direction.UP);
         if ("1".equals(selection)) {
+            //玩家出生的位置
+            playerTank = new PlayerTank(screenWidth/2, (int) (screenHeight*0.8),Direction.UP,this,2);
+            playerTanks.add(playerTank);
             Recorder.setPlayerOnePoints(0);
             //敌人坦克的数量以及出生位置设置
             for (int i = 0; i < enemies; i++) {
@@ -89,6 +95,11 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
                 EnemyTank enemyTank = new EnemyTank(tankNode.getX(), tankNode.getY(), direction, this, tankNode.getType());
                 enemyTank.setTankLife(tankNode.getTankLife());
                 enemyTank.setSpeed(tankNode.getSpeed());
+                if(enemyTank.getType() == 2){
+                    PlayerTank playerTank = new PlayerTank(tankNode.getX(), tankNode.getY(), direction, this, tankNode.getType());
+                    playerTanks.add(playerTank);
+                    continue;
+                }
                 enemyTanks.add(enemyTank);
             }
         }
@@ -110,13 +121,17 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
 
         //画玩家坦克
         //TODO:添加玩家2
-        if(playerTank != null && playerTank.getTankLife() > 0) {
-            drawTank(playerTank.getX(), playerTank.getY(), g, playerTank.getDirection(), playerTank.getType());
+        for (int i = 0; i < playerTanks.size(); i++) {
+            PlayerTank playerTank = playerTanks.get(i);
+            if(playerTank != null && playerTank.getTankLife() > 0) {
+                drawTank(playerTank.getX(), playerTank.getY(), g, playerTank.getDirection(), playerTank.getType());
+                this.playerTank = playerTank;
+            }
         }
 
         //画玩家子弹
         assert playerTank != null;
-        if(playerTank.isShot()) {
+        if(playerTank != null && playerTank.isShot()) {
             drawBullet(g, playerTank);
         }
 
@@ -141,6 +156,7 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
     /**
      * 绘制墙体
      * TODO:根据关卡绘制不同的墙体
+     * TODO:坦克不能穿过墙体
      * @param g
      */
     private void drawWall(Graphics g) {
@@ -399,9 +415,14 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            //游戏结束自动退出
+            if (this.playerTank != null && this.playerTank.getTankLife() <= 0){
+                JOptionPane.showMessageDialog(null, "游戏结束", "TankGame", JOptionPane.INFORMATION_MESSAGE);
+                System.exit(0);
+            }
             //判断玩家是否击中敌方坦克以及敌方是否击中玩家坦克
             //判断玩家是否击中墙体
-            if (playerTank.isShot()){
+            if (playerTank != null && playerTank.isShot()){
                 for (int i = 0;i<enemyTanks.size();i++) {
                     EnemyTank enemyTank = enemyTanks.get(i);
                     Vector<Bullet> bulletVector = this.playerTank.getBulletVector();
@@ -427,7 +448,7 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
 
             //敌方是否击中玩家
             //判断敌方是否击中墙体
-            if(this.playerTank.getTankLife() > 0) {
+            if(this.playerTank != null && this.playerTank.getTankLife() > 0) {
                 for (int i = 0; i < enemyTanks.size(); i++) {
                     EnemyTank enemyTank = enemyTanks.get(i);
                     Vector<Bullet> bulletVector = enemyTank.getBulletVector();
