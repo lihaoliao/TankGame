@@ -1,6 +1,7 @@
 package pri.llh.tankgame.tank;
 
 import pri.llh.tankgame.enums.Direction;
+import pri.llh.tankgame.enums.TankType;
 import pri.llh.tankgame.panel.GamePanel;
 import pri.llh.tankgame.utils.GameJudgeUtils;
 
@@ -15,7 +16,7 @@ public class EnemyTank extends Tank implements Runnable {
     private long lastShotTime;
 
 
-    public EnemyTank(int x, int y, Direction direction, GamePanel gamePanel, int type) {
+    public EnemyTank(int x, int y, Direction direction, GamePanel gamePanel, TankType type) {
         super(x, y, direction, gamePanel, type);
         this.lastShotTime = System.currentTimeMillis();
     }
@@ -40,7 +41,7 @@ public class EnemyTank extends Tank implements Runnable {
              for (int i = 0; i < 50; i++) {
                  GamePanel gamePanel = this.getGamePanel();
                  if(GameJudgeUtils.isTouchTank(this, gamePanel.getEnemyTanks())==null) {
-                     move();
+                     move(this.getDirection());
                  }else {
                      changeDirection();
                  }

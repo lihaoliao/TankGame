@@ -1,6 +1,7 @@
 package pri.llh.tankgame.tank;
 
 import pri.llh.tankgame.enums.Direction;
+import pri.llh.tankgame.enums.TankType;
 
 /**
  * @author LiHao Liao
@@ -15,10 +16,10 @@ public class TankNode {
     private int y;
     private String direction;
     private int tankLife;
-    private int type;
+    private TankType type;
     private int speed;
 
-    public TankNode(int x, int y, String direction, int tankLife, int type, int speed) {
+    public TankNode(int x, int y, String direction, int tankLife, TankType type, int speed) {
         this.x = x;
         this.y = y;
         this.direction = direction;
@@ -60,10 +61,10 @@ public class TankNode {
     }
 
     public int getType() {
-        return type;
+        return type.getValue();
     }
 
-    public void setType(int type) {
+    public void setType(TankType type) {
         this.type = type;
     }
 

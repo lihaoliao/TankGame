@@ -1,5 +1,6 @@
 package pri.llh.tankgame.operations;
 
+import pri.llh.tankgame.enums.TankType;
 import pri.llh.tankgame.tank.EnemyTank;
 import pri.llh.tankgame.tank.PlayerTank;
 import pri.llh.tankgame.tank.Tank;
@@ -55,7 +56,7 @@ public class Recorder {
     }
 
     public static void addPlayerOnePoints(Tank tank) {
-        playerOnePoints += tank.getType();
+        playerOnePoints += tank.getType().getValue();
     }
 
     public static void setPlayerTwoPoints(int playerTwoPoints) {
@@ -115,7 +116,7 @@ public class Recorder {
                 while ((line = bufferedReader.readLine()) != null){
                     String[] strings = line.split(" ");
                     TankNode tankNode = new TankNode(Integer.parseInt(strings[0]), Integer.parseInt(strings[1])
-                            , strings[2], Integer.parseInt(strings[3]), Integer.parseInt(strings[4])
+                            , strings[2], Integer.parseInt(strings[3]), TankType.valueOf(strings[4])
                             , Integer.parseInt(strings[5]));
                     tankNodes.add(tankNode);
                 }

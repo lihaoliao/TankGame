@@ -1,6 +1,8 @@
 package pri.llh.tankgame.tank;
 
 import pri.llh.tankgame.enums.Direction;
+import pri.llh.tankgame.enums.TankType;
+import pri.llh.tankgame.items.Wall;
 import pri.llh.tankgame.operations.Bullet;
 import pri.llh.tankgame.panel.GamePanel;
 
@@ -49,9 +51,9 @@ public class Tank {
     /**
      * 坦克的类型
      */
-    private int type;
+    private TankType type;
 
-    public Tank(int x, int y, Direction direction, GamePanel gamePanel, int type) {
+    public Tank(int x, int y, Direction direction, GamePanel gamePanel, TankType type) {
         this.x = x;
         this.y = y;
         this.direction = direction;
@@ -59,15 +61,15 @@ public class Tank {
         this.type = type;
     }
 
-    public int getType() {
+    public TankType getType() {
         return type;
     }
 
-    public void setType(int type) {
+    public void setType(TankType type) {
         this.type = type;
     }
 
-    public Tank(int x, int y, Direction direction, int speed, int tankLife, GamePanel gamePanel, Vector<Bullet> bulletVector, int type) {
+    public Tank(int x, int y, Direction direction, int speed, int tankLife, GamePanel gamePanel, Vector<Bullet> bulletVector, TankType type) {
         this.x = x;
         this.y = y;
         this.direction = direction;
@@ -184,35 +186,133 @@ public class Tank {
 
     /**
      * 坦克移动以及边界控制
+     * 以及墙体碰撞控制
+     * TODO:墙体碰撞可以分为炮管和其他履带
      */
-    public void move() {
+    public void move(Direction preDirection) {
+        Vector<Wall> wallList;
+        int preY;
+        int preX;
         switch (getDirection()) {
             case UP:
+                preY = y;
+                //边界控制
                 if (y - speed > 0) {
                     y -= speed;
                 } else {
-                    setDirection(Direction.DOWN);
+                    if (this.getType() != TankType.Player) {
+                        setDirection(Direction.DOWN);
+                    }
+                }
+                //墙体碰撞控制
+                wallList = this.gamePanel.getWallList();
+                for (int i = 0; i < wallList.size(); i++) {
+                    Wall wall = wallList.get(i);
+                    int wallLeftDownX = wall.getX();
+                    int wallLeftDownY = wall.getY() + wall.getHeight();
+                    int wallRightDownX = wall.getX() + wall.getWeight();
+                    int wallLeftUpY = wall.getY();
+                    if (preY - speed < wallLeftDownY + 10 && preY - speed > wallLeftUpY + 10&&preDirection != Direction.DOWN) {
+                        for (int j = x; j <= x + TANK_TOTAL_WIDTH; j++) {
+                            if (j >= wallLeftDownX && j <= wallRightDownX) {
+                                y = preY;
+                                if (this.getType() != TankType.Player) {
+                                    setDirection(Direction.DOWN);
+                                }
+                            }
+                        }
+                    }
                 }
                 break;
             case DOWN:
+                preY = y;
+                //边界控制
                 if (y + speed + Tank.TANK_TOTAL_HEIGHT < getGamePanel().getScreenHeight()) {
                     y += speed;
                 } else {
-                    setDirection(Direction.UP);
+                    if (this.getType() != TankType.Player) {
+                        setDirection(Direction.UP);
+                    }
+                }
+                //墙体碰撞控制
+                wallList = this.gamePanel.getWallList();
+                for (int i = 0; i < wallList.size(); i++) {
+                    Wall wall = wallList.get(i);
+                    int wallLeftUpX = wall.getX();
+                    int wallLeftUpY = wall.getY();
+                    int wallRightUpX = wall.getX() + wall.getWeight();
+                    int wallLeftDownY = wall.getY() + wall.getHeight();
+                    if (preY + speed + TANK_TOTAL_HEIGHT + 10> wallLeftUpY && preY + speed + TANK_TOTAL_HEIGHT + 10 < wallLeftDownY&&preDirection != Direction.UP) {
+                        for (int j = x; j <= x + TANK_TOTAL_WIDTH; j++) {
+                            if (j >= wallLeftUpX && j <= wallRightUpX) {
+                                y = preY;
+                                if (this.getType() != TankType.Player) {
+                                    setDirection(Direction.UP);
+                                }
+                            }
+                        }
+                    }
                 }
                 break;
             case LEFT:
+                preX = x;
+                //边界控制
                 if (x - speed > 0) {
                     x -= speed;
                 } else {
-                    setDirection(Direction.RIGHT);
+                    if (this.getType() != TankType.Player) {
+                        setDirection(Direction.RIGHT);
+                    }
+                }
+                //墙体碰撞控制
+                wallList = this.gamePanel.getWallList();
+                for (int i = 0; i < wallList.size(); i++) {
+                    Wall wall = wallList.get(i);
+                    int wallLeftDownX = wall.getX();
+                    int wallRightDownY = wall.getY() + wall.getHeight();
+                    int wallRightDownX = wall.getX() + wall.getWeight();
+                    int wallRightUpY = wall.getY();
+                    if (preX - speed - 10< wallRightDownX && preX - speed - 10 > wallLeftDownX &&preDirection != Direction.RIGHT) {
+                        for (int j = y; j <= y + TANK_TOTAL_WIDTH; j++) {
+                            if (j >= wallRightUpY && j <= wallRightDownY) {
+                                x = preX;
+                                if (this.getType() != TankType.Player) {
+                                    setDirection(Direction.RIGHT);
+                                }
+                            }
+                        }
+                    }
                 }
                 break;
             case RIGHT:
+                preX = x;
+                //边界控制
                 if (x + speed + Tank.TANK_TOTAL_HEIGHT < getGamePanel().getScreenWidth()) {
                     x += speed;
                 } else {
-                    setDirection(Direction.LEFT);
+                    if (this.getType() != TankType.Player) {
+                        setDirection(Direction.LEFT);
+                    }
+                }
+                //墙体碰撞控制
+                wallList = this.gamePanel.getWallList();
+                for (int i = 0; i < wallList.size(); i++) {
+                    Wall wall = wallList.get(i);
+                    int wallLeftDownX = wall.getX();
+                    int wallRightDownX = wall.getX() + wall.getWeight();
+                    int wallLeftUpY = wall.getY();
+                    int wallLeftDownY = wall.getY() + wall.getHeight();
+                    if (preX + speed + 10 + TANK_TOTAL_HEIGHT > wallLeftDownX && preX + speed + 10 + TANK_TOTAL_HEIGHT < wallRightDownX &&preDirection != Direction.LEFT) {
+                        for (int j = y; j <= y + TANK_TOTAL_WIDTH; j++) {
+                            if (j >= wallLeftUpY && j <= wallLeftDownY) {
+
+                                x = preX;
+                                if (this.getType() != TankType.Player) {
+                                    setDirection(Direction.LEFT);
+                                }
+                            }
+                        }
+                    }
                 }
                 break;
             default:

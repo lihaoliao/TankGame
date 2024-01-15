@@ -31,7 +31,7 @@ public class Game extends JFrame {
     public Game() {
 //        System.out.println("请选择:1.新游戏 2:继续游戏");
 //        String selection = scanner.next();
-        String selection = "2";
+        String selection = "1";
         while (!"1".equals(selection) && !"2".equals(selection)){
             System.out.println("请选择:1.新游戏 2:继续游戏");
             selection = scanner.next();

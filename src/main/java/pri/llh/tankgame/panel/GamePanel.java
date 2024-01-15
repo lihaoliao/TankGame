@@ -1,6 +1,7 @@
 package pri.llh.tankgame.panel;
 
 import pri.llh.tankgame.enums.Direction;
+import pri.llh.tankgame.enums.TankType;
 import pri.llh.tankgame.items.IndestructibleWall;
 import pri.llh.tankgame.items.NormalWall;
 import pri.llh.tankgame.items.Wall;
@@ -44,7 +45,7 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
     /**
      * 敌人数量，默认为3
      */
-    int enemies = 10;
+    int enemies = 11;
     /**
      * 用于记录上局游戏的Vector
      */
@@ -72,12 +73,12 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
         //playerTank = new PlayerTank(screenWidth-1250, (int) (screenHeight*0.8),Direction.UP);
         if ("1".equals(selection)) {
             //玩家出生的位置
-            playerTank = new PlayerTank(screenWidth/2, (int) (screenHeight*0.8),Direction.UP,this,2);
+            playerTank = new PlayerTank(screenWidth/2, (int) (screenHeight*0.8),Direction.UP,this,TankType.Player);
             playerTanks.add(playerTank);
             Recorder.setPlayerOnePoints(0);
             //敌人坦克的数量以及出生位置设置
             for (int i = 0; i < enemies; i++) {
-                enemyTanks.add(new EnemyTank(((i + 1) * 100), 0, Direction.DOWN, this, 1));
+                enemyTanks.add(new EnemyTank(((i + 1) * 100), 0, Direction.DOWN, this, TankType.EnemyOne));
             }
         } else if ("2".equals(selection)) {
             for (int i = 0; i < tankNodes.size(); i++) {
@@ -92,11 +93,11 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
                 }else if("RIGHT".equals(tankNode.getDirection())){
                     direction = Direction.RIGHT;
                 }
-                EnemyTank enemyTank = new EnemyTank(tankNode.getX(), tankNode.getY(), direction, this, tankNode.getType());
+                EnemyTank enemyTank = new EnemyTank(tankNode.getX(), tankNode.getY(), direction, this, TankType.valueOf(tankNode.getType()));
                 enemyTank.setTankLife(tankNode.getTankLife());
                 enemyTank.setSpeed(tankNode.getSpeed());
-                if(enemyTank.getType() == 2){
-                    PlayerTank playerTank = new PlayerTank(tankNode.getX(), tankNode.getY(), direction, this, tankNode.getType());
+                if(enemyTank.getType() == TankType.Player){
+                    PlayerTank playerTank = new PlayerTank(tankNode.getX(), tankNode.getY(), direction, this, TankType.valueOf(tankNode.getType()));
                     playerTanks.add(playerTank);
                     continue;
                 }
@@ -138,9 +139,10 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
         drawEnemyTankAndBullet(g);
 
         //敌人发射子弹的频率
+        //TODO:弹道上有玩家就一定射击
         for (int i = 0;i<enemyTanks.size();i++) {
             EnemyTank enemyTank = enemyTanks.get(i);
-            if(Math.random() < 0.05) {
+            if(Math.random() < 0.03) {
                 enemyTank.shot();
             }
         }
@@ -156,19 +158,18 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
     /**
      * 绘制墙体
      * TODO:根据关卡绘制不同的墙体
-     * TODO:坦克不能穿过墙体
      * @param g
      */
     private void drawWall(Graphics g) {
-        int x = screenWidth/2;
-        int y = screenHeight/2;
+        int x = screenWidth/2 - 400;
+        int y = screenHeight/2 - 200;
         if(init) {
             for (int i = 0; i < 10; i++) {
                 NormalWall wall = new NormalWall(x, y);
                 wallList.add(wall);
                 x += wall.getWeight();
             }
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 30; i++) {
                 IndestructibleWall wall = new IndestructibleWall(x, y);
                 wall.setDestructible(false);
                 wallList.add(wall);
@@ -244,22 +245,19 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
      * @param direction 坦克方向 - 上下左右
      * @param type  坦克类型
      */
-    public void drawTank(int x, int y, Graphics g, Direction direction,int type) {
+    public void drawTank(int x, int y, Graphics g, Direction direction, TankType type) {
 
         switch (type){
             //enemies 普通版本
-            case 1:
+            case EnemyOne:
                 g.setColor(Color.RED);
                 break;
             //player 玩家1
-            case 2:
+            case Player:
                 g.setColor(Color.cyan);
                 break;
-            case 3:
+            case EnemyTwo:
                 g.setColor(Color.GREEN);
-                break;
-            case 4:
-                g.setColor(Color.YELLOW);
                 break;
             default:
                 g.setColor(Color.BLACK);
@@ -316,17 +314,21 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
     @Override
     public void keyPressed(KeyEvent e) {
         if(e.getKeyCode()==KeyEvent.VK_W){
+            Direction preDirection = playerTank.getDirection();
             playerTank.setDirection(Direction.UP);
-            playerTank.move();
+            playerTank.move(preDirection);
         }else if (e.getKeyCode()==KeyEvent.VK_S){
+            Direction preDirection = playerTank.getDirection();
             playerTank.setDirection(Direction.DOWN);
-            playerTank.move();
+            playerTank.move(preDirection);
         }else if (e.getKeyCode()==KeyEvent.VK_A){
+            Direction preDirection = playerTank.getDirection();
             playerTank.setDirection(Direction.LEFT);
-            playerTank.move();
+            playerTank.move(preDirection);
         }else if (e.getKeyCode()==KeyEvent.VK_D){
+            Direction preDirection = playerTank.getDirection();
             playerTank.setDirection(Direction.RIGHT);
-            playerTank.move();
+            playerTank.move(preDirection);
         }
 
         //玩家射击监听
@@ -405,6 +407,14 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
 
     public Vector<EnemyTank> getEnemyTanks() {
         return enemyTanks;
+    }
+
+    public Vector<Wall> getWallList() {
+        return wallList;
+    }
+
+    public void setWallList(Vector<Wall> wallList) {
+        this.wallList = wallList;
     }
 
     @Override

@@ -55,6 +55,7 @@ public class GameJudgeUtils {
     /**
      * 判断坦克是否碰撞，此方法为敌人坦克判断
      * TODO: 玩家与敌人碰撞判断
+     *
      * @param currentTank 当前判断的坦克
      * @param tankVector  所有坦克的列表
      * @return 发生碰撞的坦克或者Null
@@ -193,12 +194,19 @@ public class GameJudgeUtils {
         return null;
     }
 
-    public static boolean hitWallJudge(Bullet bullet, Wall wall){
+    /**
+     * 判断子弹是否击中墙体
+     *
+     * @param bullet
+     * @param wall
+     * @return
+     */
+    public static boolean hitWallJudge(Bullet bullet, Wall wall) {
         int bulletX = bullet.getBullet()[0];
         int bulletY = bullet.getBullet()[1];
-        if (bulletX >= wall.getX() && bulletX <= wall.getX()+wall.getWeight() && bulletY >= wall.getY() && bulletY <= wall.getY()+wall.getHeight()) {
+        if (bulletX >= wall.getX() && bulletX <= wall.getX() + wall.getWeight() && bulletY >= wall.getY() && bulletY <= wall.getY() + wall.getHeight()) {
             bullet.setRunning(false);
-            if (wall.isDestructible()){
+            if (wall.isDestructible()) {
                 wall.setExist(false);
             }
             return true;
