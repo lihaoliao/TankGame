@@ -18,6 +18,7 @@ import java.util.Vector;
  * @since 1.0
  */
 public class Recorder {
+    //TODO:玩家2分数记录
     private static int playerOnePoints = 0;
     private static int playerTwoPoints = 0;
     private static BufferedWriter bufferedWriter = null;

@@ -27,6 +27,7 @@ public class Game extends JFrame {
 
     /**
      * 窗口相关参数设置
+     * TODO:默认为新游戏方便测试
      */
     public Game() {
 //        System.out.println("请选择:1.新游戏 2:继续游戏");
