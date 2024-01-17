@@ -33,7 +33,8 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
     private int screenWidth;
     private int screenHeight;
 
-    PlayerTank playerTank;
+    PlayerTank playerTankTwo;
+    PlayerTank playerTankOne;
     /**
      * 敌人坦克
      */
@@ -73,8 +74,8 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
         //playerTank = new PlayerTank(screenWidth-1250, (int) (screenHeight*0.8),Direction.UP);
         if ("1".equals(selection)) {
             //玩家出生的位置
-            playerTank = new PlayerTank(screenWidth/2, (int) (screenHeight*0.8),Direction.UP,this,TankType.Player);
-            playerTanks.add(playerTank);
+            playerTankOne = new PlayerTank(screenWidth/2, (int) (screenHeight*0.8),Direction.UP,this,TankType.Player);
+            playerTanks.add(playerTankOne);
             Recorder.setPlayerOnePoints(0);
             //敌人坦克的数量以及出生位置设置
             for (int i = 0; i < enemies; i++) {
@@ -126,14 +127,14 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
             PlayerTank playerTank = playerTanks.get(i);
             if(playerTank != null && playerTank.getTankLife() > 0) {
                 drawTank(playerTank.getX(), playerTank.getY(), g, playerTank.getDirection(), playerTank.getType());
-                this.playerTank = playerTank;
+                this.playerTankOne = playerTank;
             }
         }
 
         //画玩家子弹
-        assert playerTank != null;
-        if(playerTank != null && playerTank.isShot()) {
-            drawBullet(g, playerTank);
+        assert playerTankOne != null;
+        if(playerTankOne != null && playerTankOne.isShot()) {
+            drawBullet(g, playerTankOne);
         }
 
         drawEnemyTankAndBullet(g);
@@ -378,21 +379,21 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
     @Override
     public void keyPressed(KeyEvent e) {
         if(e.getKeyCode()==KeyEvent.VK_W){
-            Direction preDirection = playerTank.getDirection();
-            playerTank.setDirection(Direction.UP);
-            playerTank.move(preDirection);
+            Direction preDirection = playerTankOne.getDirection();
+            playerTankOne.setDirection(Direction.UP);
+            playerTankOne.move(preDirection);
         }else if (e.getKeyCode()==KeyEvent.VK_S){
-            Direction preDirection = playerTank.getDirection();
-            playerTank.setDirection(Direction.DOWN);
-            playerTank.move(preDirection);
+            Direction preDirection = playerTankOne.getDirection();
+            playerTankOne.setDirection(Direction.DOWN);
+            playerTankOne.move(preDirection);
         }else if (e.getKeyCode()==KeyEvent.VK_A){
-            Direction preDirection = playerTank.getDirection();
-            playerTank.setDirection(Direction.LEFT);
-            playerTank.move(preDirection);
+            Direction preDirection = playerTankOne.getDirection();
+            playerTankOne.setDirection(Direction.LEFT);
+            playerTankOne.move(preDirection);
         }else if (e.getKeyCode()==KeyEvent.VK_D){
-            Direction preDirection = playerTank.getDirection();
-            playerTank.setDirection(Direction.RIGHT);
-            playerTank.move(preDirection);
+            Direction preDirection = playerTankOne.getDirection();
+            playerTankOne.setDirection(Direction.RIGHT);
+            playerTankOne.move(preDirection);
         }
 
         //玩家射击监听
@@ -400,7 +401,7 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
             long currentTimeMillis = System.currentTimeMillis();
             if(System.currentTimeMillis() - lastShotTime.get() >= 1000){
                 lastShotTime.set(currentTimeMillis);
-                playerTank.shot();
+                playerTankOne.shot();
             }
         }
     }
@@ -490,16 +491,16 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
                 e.printStackTrace();
             }
             //游戏结束自动退出
-            if (this.playerTank != null && this.playerTank.getTankLife() <= 0){
+            if (this.playerTankOne != null && this.playerTankOne.getTankLife() <= 0){
                 JOptionPane.showMessageDialog(null, "游戏结束", "TankGame", JOptionPane.INFORMATION_MESSAGE);
                 System.exit(0);
             }
             //判断玩家是否击中敌方坦克以及敌方是否击中玩家坦克
             //判断玩家是否击中墙体
-            if (playerTank != null && playerTank.isShot()){
+            if (playerTankOne != null && playerTankOne.isShot()){
                 for (int i = 0;i<enemyTanks.size();i++) {
                     EnemyTank enemyTank = enemyTanks.get(i);
-                    Vector<Bullet> bulletVector = this.playerTank.getBulletVector();
+                    Vector<Bullet> bulletVector = this.playerTankOne.getBulletVector();
                     for (int j = 0; j < bulletVector.size(); j++) {
                         boolean isHitEnemies = GameJudgeUtils.hitTankJudge(bulletVector.get(j),enemyTank);
                         if (isHitEnemies){
@@ -510,7 +511,7 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
                 }
                 for (int i = 0; i < wallList.size(); i++) {
                     Wall wall = wallList.get(i);
-                    Vector<Bullet> bulletVector = this.playerTank.getBulletVector();
+                    Vector<Bullet> bulletVector = this.playerTankOne.getBulletVector();
                     for (int j = 0; j < bulletVector.size(); j++) {
                         boolean isHitWall = GameJudgeUtils.hitWallJudge(bulletVector.get(j),wall);
                         if (isHitWall){
@@ -522,14 +523,14 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
 
             //敌方是否击中玩家
             //判断敌方是否击中墙体
-            if(this.playerTank != null && this.playerTank.getTankLife() > 0) {
+            if(this.playerTankOne != null && this.playerTankOne.getTankLife() > 0) {
                 for (int i = 0; i < enemyTanks.size(); i++) {
                     EnemyTank enemyTank = enemyTanks.get(i);
                     Vector<Bullet> bulletVector = enemyTank.getBulletVector();
                     for (int j = 0; j < bulletVector.size(); j++) {
-                        boolean isHitEnemies = GameJudgeUtils.hitTankJudge(bulletVector.get(j), this.playerTank);
+                        boolean isHitEnemies = GameJudgeUtils.hitTankJudge(bulletVector.get(j), this.playerTankOne);
                         if (isHitEnemies) {
-                            booms.add(new Boom(this.playerTank.getX(), this.playerTank.getY()));
+                            booms.add(new Boom(this.playerTankOne.getX(), this.playerTankOne.getY()));
                         }
                     }
                     for (int j = 0; j < wallList.size(); j++) {
