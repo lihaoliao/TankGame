@@ -138,11 +138,10 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
 
         drawEnemyTankAndBullet(g);
 
-        //敌人发射子弹的频率
-        //TODO:弹道上有玩家就一定射击
+        //敌人发射子弹,有敌人才会射击
         for (int i = 0;i<enemyTanks.size();i++) {
             EnemyTank enemyTank = enemyTanks.get(i);
-            if(Math.random() < 0.03) {
+            if (shotThePlayer(enemyTank)){
                 enemyTank.shot();
             }
         }
@@ -151,6 +150,72 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
 
         drawWall(g);
 
+    }
+
+    /**
+     * 判断玩家是否在弹道上
+     * @param enemyTank
+     * @return 是否射击
+     */
+    private boolean shotThePlayer(EnemyTank enemyTank) {
+        int bulletY;
+        int bulletX;
+        for (int i = 0; i < playerTanks.size(); i++) {
+            PlayerTank playerTank = playerTanks.get(i);
+            switch (enemyTank.getDirection()){
+                case UP:
+                    bulletY = enemyTank.getY() - 10;
+                    bulletX = (int) (enemyTank.getX() + 0.5* EnemyTank.TANK_TOTAL_WIDTH);
+                    if (playerTank.getDirection().equals(Direction.UP) || playerTank.getDirection().equals(Direction.DOWN)){
+                        if(playerTank.getY() < bulletY && playerTank.getX() <= bulletX && playerTank.getX() + PlayerTank.TANK_TOTAL_WIDTH >= bulletX){
+                            return true;
+                        }
+                    }else {
+                        if (playerTank.getY() < bulletY && playerTank.getX() <= bulletX && playerTank.getX() + PlayerTank.TANK_TOTAL_HEIGHT >= bulletX){
+                            return true;
+                        }
+                    }
+                case DOWN:
+                    bulletY = enemyTank.getY() + EnemyTank.TANK_TOTAL_HEIGHT + 10;
+                    bulletX = (int) (enemyTank.getX() + 0.5* EnemyTank.TANK_TOTAL_WIDTH);
+                    if (playerTank.getDirection().equals(Direction.UP) || playerTank.getDirection().equals(Direction.DOWN)){
+                        if(playerTank.getY() > bulletY && playerTank.getX() <= bulletX && playerTank.getX() + PlayerTank.TANK_TOTAL_WIDTH >= bulletX){
+                            return true;
+                        }
+                    }else {
+                        if (playerTank.getY() > bulletY && playerTank.getX() <= bulletX && playerTank.getX() + PlayerTank.TANK_TOTAL_HEIGHT >= bulletX){
+                            return true;
+                        }
+                    }
+                case LEFT:
+                    bulletY = (int) (enemyTank.getY() + 0.5 * EnemyTank.TANK_TOTAL_WIDTH);
+                    bulletX = enemyTank.getX() - 10;
+                    if (playerTank.getDirection().equals(Direction.UP) || playerTank.getDirection().equals(Direction.DOWN)){
+                        if(playerTank.getX() < bulletX && playerTank.getY() <= bulletY && playerTank.getY() + PlayerTank.TANK_TOTAL_HEIGHT >= bulletY){
+                            return true;
+                        }
+                    }else {
+                        if (playerTank.getX() < bulletX && playerTank.getY() <= bulletY && playerTank.getY() + PlayerTank.TANK_TOTAL_WIDTH >= bulletY){
+                            return true;
+                        }
+                    }
+                case RIGHT:
+                    bulletY = (int) (enemyTank.getY() + 0.5 * EnemyTank.TANK_TOTAL_WIDTH);
+                    bulletX = enemyTank.getX() + EnemyTank.TANK_TOTAL_HEIGHT + 10;
+                    if (playerTank.getDirection().equals(Direction.UP) || playerTank.getDirection().equals(Direction.DOWN)){
+                        if(playerTank.getX() > bulletX && playerTank.getY() <= bulletY && playerTank.getY() + PlayerTank.TANK_TOTAL_HEIGHT >= bulletY){
+                            return true;
+                        }
+                    }else {
+                        if (playerTank.getX() > bulletX && playerTank.getY() <= bulletY && playerTank.getY() + PlayerTank.TANK_TOTAL_WIDTH >= bulletY){
+                            return true;
+                        }
+                    }
+                default:
+                    return false;
+            }
+        }
+        return false;
     }
 
     private boolean init = true;
@@ -246,7 +311,6 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
      * @param type  坦克类型
      */
     public void drawTank(int x, int y, Graphics g, Direction direction, TankType type) {
-
         switch (type){
             //enemies 普通版本
             case EnemyOne:
@@ -478,7 +542,6 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
                         }
                     }
                 }
-
             }
             this.repaint();
         }
