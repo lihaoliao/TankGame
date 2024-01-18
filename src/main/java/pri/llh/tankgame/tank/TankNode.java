@@ -18,6 +18,7 @@ public class TankNode {
     private int tankLife;
     private TankType type;
     private int speed;
+    private int playerIndex;
 
     public TankNode(int x, int y, String direction, int tankLife, TankType type, int speed) {
         this.x = x;
@@ -26,6 +27,14 @@ public class TankNode {
         this.tankLife = tankLife;
         this.type = type;
         this.speed = speed;
+    }
+
+    public int getPlayerIndex() {
+        return playerIndex;
+    }
+
+    public void setPlayerIndex(int playerIndex) {
+        this.playerIndex = playerIndex;
     }
 
     public int getX() {

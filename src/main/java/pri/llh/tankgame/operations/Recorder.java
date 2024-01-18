@@ -18,7 +18,6 @@ import java.util.Vector;
  * @since 1.0
  */
 public class Recorder {
-    //TODO:玩家2分数记录
     private static int playerOnePoints = 0;
     private static int playerTwoPoints = 0;
     private static BufferedWriter bufferedWriter = null;
@@ -60,6 +59,10 @@ public class Recorder {
         playerOnePoints += tank.getType().getValue();
     }
 
+    public static void addPlayerTwoPoints(Tank tank) {
+        playerTwoPoints += tank.getType().getValue();
+    }
+
     public static void setPlayerTwoPoints(int playerTwoPoints) {
         Recorder.playerTwoPoints = playerTwoPoints;
     }
@@ -70,7 +73,9 @@ public class Recorder {
      */
     public static void keepRecord() throws IOException {
         bufferedWriter = new BufferedWriter(new FileWriter(recordPath));
-        bufferedWriter.write(String.valueOf(playerOnePoints));
+        bufferedWriter.write(String.valueOf("playerOnePoints " + playerOnePoints));
+        bufferedWriter.newLine();
+        bufferedWriter.write(String.valueOf("playerTwoPoints " + playerTwoPoints));
         bufferedWriter.newLine();
         bufferedWriter.flush();
 //        bufferedWriter.write(playerTwoPoints);
@@ -93,7 +98,7 @@ public class Recorder {
                 //保存信息
                 String record = playerTank.getX() + " " + playerTank.getY() + " " +
                         playerTank.getDirection() + " " + playerTank.getTankLife() +
-                        " " + playerTank.getType() + " " + playerTank.getSpeed();
+                        " " + playerTank.getType() + " " + playerTank.getSpeed() + " " + (i+1);
                 bufferedWriter.write(record);
                 bufferedWriter.newLine();
                 bufferedWriter.flush();
@@ -112,13 +117,21 @@ public class Recorder {
         try {
             bufferedReader = new BufferedReader(new FileReader(recordPath));
             try {
-                playerOnePoints = Integer.parseInt(bufferedReader.readLine());
+                String[] lineForPlayerOnePoints = bufferedReader.readLine().split(" ");
+                String[] lineForPlayerTwoPoints = bufferedReader.readLine().split(" ");
+                playerOnePoints = Integer.parseInt(lineForPlayerOnePoints[1]);
+                playerTwoPoints = Integer.parseInt(lineForPlayerTwoPoints[1]);
                 String line = "";
                 while ((line = bufferedReader.readLine()) != null){
                     String[] strings = line.split(" ");
                     TankNode tankNode = new TankNode(Integer.parseInt(strings[0]), Integer.parseInt(strings[1])
                             , strings[2], Integer.parseInt(strings[3]), TankType.valueOf(strings[4])
                             , Integer.parseInt(strings[5]));
+                    if(strings.length > 6 && strings[6].equals("1")){
+                        tankNode.setPlayerIndex(1);
+                    }else if (strings.length > 6 && strings[6].equals("2")){
+                        tankNode.setPlayerIndex(2);
+                    }
                     tankNodes.add(tankNode);
                 }
             } catch (IOException e) {

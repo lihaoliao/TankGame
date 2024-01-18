@@ -50,7 +50,7 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
     /**
      * 用于记录上局游戏的Vector
      */
-    Vector<TankNode> tankNodes = new Vector<>();
+    Vector<TankNode> tankNodes;
     Vector<Wall> wallList = new Vector<>();
     Vector<Boom> booms = new Vector<>();
     Image boom1;
@@ -80,6 +80,7 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
             playerTanks.add(playerTankOne);
             playerTanks.add(playerTankTwo);
             Recorder.setPlayerOnePoints(0);
+            Recorder.setPlayerTwoPoints(0);
             //敌人坦克的数量以及出生位置设置
             for (int i = 0; i < enemies; i++) {
                 enemyTanks.add(new EnemyTank(((i + 1) * 100), 0, Direction.DOWN, this, TankType.EnemyOne));
@@ -102,6 +103,11 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
                 enemyTank.setSpeed(tankNode.getSpeed());
                 if(enemyTank.getType() == TankType.Player){
                     PlayerTank playerTank = new PlayerTank(tankNode.getX(), tankNode.getY(), direction, this, TankType.valueOf(tankNode.getType()));
+                    if(tankNode.getPlayerIndex() == 1){
+                        playerTankOne = playerTank;
+                    }else if(tankNode.getPlayerIndex() == 2){
+                        playerTankTwo = playerTank;
+                    }
                     playerTanks.add(playerTank);
                     continue;
                 }
@@ -538,7 +544,7 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
         Font font = new Font("宋体",Font.BOLD,25);
         g.setFont(font);
         g.drawString("玩家1分数: " + Recorder.getPlayerOnePoints(), screenWidth, (int) (screenHeight * 0.1));
-        g.drawString("玩家2分数: ", screenWidth, (int) (screenHeight * 0.2));
+        g.drawString("玩家2分数: " + Recorder.getPlayerTwoPoints(), screenWidth, (int) (screenHeight * 0.2));
     }
 
     @Override
@@ -637,7 +643,7 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
                     for (int j = 0; j < bulletVector.size(); j++) {
                         boolean isHitEnemies = GameJudgeUtils.hitTankJudge(bulletVector.get(j),enemyTank);
                         if (isHitEnemies){
-                            Recorder.addPlayerOnePoints(enemyTank);
+                            Recorder.addPlayerTwoPoints(enemyTank);
                             booms.add(new Boom(enemyTank.getX(),enemyTank.getY()));
                         }
                     }
