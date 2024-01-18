@@ -40,7 +40,8 @@ public class EnemyTank extends Tank implements Runnable {
          while (true){
              for (int i = 0; i < 50; i++) {
                  GamePanel gamePanel = this.getGamePanel();
-                 if(GameJudgeUtils.isTouchTank(this, gamePanel.getEnemyTanks())==null) {
+                 if(GameJudgeUtils.isTouchOtherTank(this, gamePanel.getEnemyTanks())==null
+                         && GameJudgeUtils.isTouchOtherTank(this,gamePanel.getPlayerTanks()) == null) {
                      move(this.getDirection());
                  }else {
                      changeDirection();

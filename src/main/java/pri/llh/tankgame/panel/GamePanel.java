@@ -756,4 +756,8 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
             }
         }
     }
+
+    public Vector<PlayerTank> getPlayerTanks() {
+        return playerTanks;
+    }
 }

@@ -5,6 +5,7 @@ import pri.llh.tankgame.enums.TankType;
 import pri.llh.tankgame.items.Wall;
 import pri.llh.tankgame.operations.Bullet;
 import pri.llh.tankgame.panel.GamePanel;
+import pri.llh.tankgame.utils.GameJudgeUtils;
 
 import java.util.Vector;
 
@@ -193,6 +194,8 @@ public class Tank {
         Vector<Wall> wallList;
         int preY;
         int preX;
+        Tank enemyTank;
+        Tank otherPlayerTank;
         switch (getDirection()) {
             case UP:
                 preY = y;
@@ -222,6 +225,11 @@ public class Tank {
                             }
                         }
                     }
+                }
+                enemyTank = GameJudgeUtils.isTouchOtherTank(this, gamePanel.getEnemyTanks());
+                otherPlayerTank = GameJudgeUtils.isTouchOtherTank(this,gamePanel.getPlayerTanks());
+                if(enemyTank != null || otherPlayerTank != null){
+                    y = preY;
                 }
                 break;
             case DOWN:
@@ -253,6 +261,12 @@ public class Tank {
                         }
                     }
                 }
+                //玩家与敌人碰撞判断
+                enemyTank = GameJudgeUtils.isTouchOtherTank(this, gamePanel.getEnemyTanks());
+                otherPlayerTank = GameJudgeUtils.isTouchOtherTank(this,gamePanel.getPlayerTanks());
+                if(enemyTank != null || otherPlayerTank != null){
+                    y = preY;
+                }
                 break;
             case LEFT:
                 preX = x;
@@ -282,6 +296,11 @@ public class Tank {
                             }
                         }
                     }
+                }
+                enemyTank = GameJudgeUtils.isTouchOtherTank(this, gamePanel.getEnemyTanks());
+                otherPlayerTank = GameJudgeUtils.isTouchOtherTank(this,gamePanel.getPlayerTanks());
+                if(enemyTank != null || otherPlayerTank != null){
+                    x = preX;
                 }
                 break;
             case RIGHT:
@@ -313,6 +332,11 @@ public class Tank {
                             }
                         }
                     }
+                }
+                enemyTank = GameJudgeUtils.isTouchOtherTank(this, gamePanel.getEnemyTanks());
+                otherPlayerTank = GameJudgeUtils.isTouchOtherTank(this,gamePanel.getPlayerTanks());
+                if(enemyTank != null || otherPlayerTank != null){
+                    x = preX;
                 }
                 break;
             default:

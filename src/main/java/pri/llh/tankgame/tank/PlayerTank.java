@@ -2,7 +2,10 @@ package pri.llh.tankgame.tank;
 
 import pri.llh.tankgame.enums.Direction;
 import pri.llh.tankgame.enums.TankType;
+import pri.llh.tankgame.items.Wall;
 import pri.llh.tankgame.panel.GamePanel;
+
+import java.util.Vector;
 
 /**
  * @author LiHao Liao
