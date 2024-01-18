@@ -8,7 +8,6 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
-import java.util.Scanner;
 
 /**
  * @author LiHao Liao
@@ -19,29 +18,33 @@ import java.util.Scanner;
  */
 public class Game extends JFrame {
 
-    private GamePanel gamePanel;
-    Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) {
-        Game game = new Game();
+        // 在EDT中启动游戏
+        SwingUtilities.invokeLater(() -> new Game());
     }
 
     /**
      * 窗口相关参数设置
-     * TODO:默认为新游戏方便测试
      */
     public Game() {
-//        System.out.println("请选择:1.新游戏 2:继续游戏");
-//        String selection = scanner.next();
-        String selection = "2";
-        while (!"1".equals(selection) && !"2".equals(selection)){
-            System.out.println("请选择:1.新游戏 2:继续游戏");
-            selection = scanner.next();
-        }
+        // 创建初始选择对话框
+        Object[] options = {"新游戏", "继续游戏"};
+        int selection = JOptionPane.showOptionDialog(null,
+                "请选择游戏模式：",
+                "TankGame",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]);
+
         Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
         Dimension screenSize = defaultToolkit.getScreenSize();
         screenSize.width *= 0.75;
         screenSize.height *= 0.75;
-        gamePanel = new GamePanel(screenSize.width,screenSize.height, selection);
+
+        // 根据用户的选择创建游戏面板
+        GamePanel gamePanel = new GamePanel(screenSize.width, screenSize.height, selection == JOptionPane.YES_OPTION ? "1" : "2");
         this.add(gamePanel);
         this.setTitle("Tank Game");
         this.addKeyListener(gamePanel);
@@ -49,22 +52,30 @@ public class Game extends JFrame {
         this.setSize((int) (screenSize.width * 1.2), (int) (screenSize.height * 1.2));
         this.setVisible(true);
         this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         Thread panelThread = new Thread(gamePanel);
         panelThread.setName("GamePanelThread");
         panelThread.start();
 
-        //监听关闭窗口事件处理
-        this.addWindowListener(new WindowAdapter(){
+        // 监听关闭窗口事件处理
+        this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                System.out.println("游戏结束");
-                try {
-                    Recorder.keepRecord();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
+                int option = JOptionPane.showConfirmDialog(
+                        null,
+                        "是否退出游戏？",
+                        "TankGame",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE
+                );
+                if (option == JOptionPane.YES_OPTION) {
+                    try {
+                        Recorder.keepRecord();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                    System.exit(0);
                 }
-                System.exit(0);
-                super.windowClosing(e);
             }
         });
     }

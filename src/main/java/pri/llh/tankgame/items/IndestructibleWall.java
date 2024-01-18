@@ -8,7 +8,7 @@ package pri.llh.tankgame.items;
  * @Description
  * @since 1.0
  */
-public class IndestructibleWall extends Wall{
+public class IndestructibleWall extends Wall {
     public IndestructibleWall(int x, int y) {
         super(x, y);
     }

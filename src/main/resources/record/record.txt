@@ -1,12 +1,15 @@
-playerOnePoints 2
-playerTwoPoints 1
-142 471 LEFT 1 EnemyOne 3
-263 597 RIGHT 1 EnemyOne 3
-192 225 RIGHT 1 EnemyOne 3
-809 9 RIGHT 1 EnemyOne 3
-274 45 DOWN 1 EnemyOne 3
-416 6 LEFT 1 EnemyOne 3
-318 36 LEFT 1 EnemyOne 3
-1207 45 RIGHT 1 EnemyOne 3
-654 288 LEFT 1000 Player 3 1
-823 363 RIGHT 1000 Player 3 2
+playerOnePoints 0
+playerTwoPoints 0
+13 123 LEFT 1 EnemyOne 3
+11 3 LEFT 1 EnemyOne 3
+675 93 UP 1 EnemyOne 3
+568 6 UP 1 EnemyOne 3
+632 51 UP 1 EnemyOne 3
+918 36 LEFT 1 EnemyOne 3
+181 87 DOWN 1 EnemyOne 3
+851 15 DOWN 1 EnemyOne 3
+699 30 DOWN 1 EnemyOne 3
+889 117 UP 1 EnemyOne 3
+935 81 RIGHT 1 EnemyOne 3
+948 237 RIGHT 1000 Player 3 1
+820 648 UP 1000 Player 3 2

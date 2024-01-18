@@ -103,7 +103,7 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
                 enemyTank.setSpeed(tankNode.getSpeed());
                 if(enemyTank.getType() == TankType.Player){
                     PlayerTank playerTank = new PlayerTank(tankNode.getX(), tankNode.getY(), direction, this, TankType.valueOf(tankNode.getType()));
-                    if(tankNode.getPlayerIndex() == 1){
+                    if (tankNode.getPlayerIndex() == 1) {
                         playerTankOne = playerTank;
                     }else if(tankNode.getPlayerIndex() == 2){
                         playerTankTwo = playerTank;
@@ -121,7 +121,7 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
 
     /**
      * 绘制面板以及其他相关组件
-     * @param g
+     * @param g 画笔
      */
     @Override
     public void paint(Graphics g) {
@@ -153,7 +153,7 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
 
     /**
      * 绘制玩家的坦克
-     * @param g
+     * @param g 画笔
      */
     private void drawPlayerTank(Graphics g) {
         for (int i = 0; i < playerTanks.size(); i++) {
@@ -170,7 +170,7 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
 
     /**
      * 画玩家子弹
-     * @param g
+     * @param g 画笔
      */
     private void drawPlayerBullet(Graphics g) {
         assert playerTankOne != null;
@@ -185,7 +185,7 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
 
     /**
      * 判断玩家是否在弹道上
-     * @param enemyTank
+     * @param enemyTank 敌人坦克
      * @return 是否射击
      */
     private boolean shotThePlayer(EnemyTank enemyTank) {
@@ -254,7 +254,7 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
     /**
      * 绘制墙体
      * TODO:根据关卡绘制不同的墙体
-     * @param g
+     * @param g 画笔
      */
     private void drawWall(Graphics g) {
         int x = screenWidth/2 - 400;
@@ -291,7 +291,7 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
 
     /**
      * 画敌人的坦克并且装子弹
-     * @param g
+     * @param g 画笔
      */
     private void drawEnemyTankAndBullet(Graphics g) {
         for (int i = 0;i<enemyTanks.size();i++) {
@@ -313,7 +313,7 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
 
     /**
      * 画爆炸效果
-     * @param g
+     * @param g 画笔
      */
     private void drawBoom(Graphics g) {
         for (int i = 0; i < booms.size(); i++) {
@@ -337,7 +337,7 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
      * TODO:设计更多种类的坦克
      * @param x 坦克左上角x坐标
      * @param y 坦克左上角y坐标
-     * @param g
+     * @param g 画笔
      * @param direction 坦克方向 - 上下左右
      * @param type  坦克类型
      */
@@ -404,7 +404,6 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
                 g.setColor(Color.RED);
                 break;
             //player 玩家
-            //TODO:自选坦克颜色
             case Player:
                 g.setColor(color);
                 break;
@@ -463,7 +462,7 @@ public class GamePanel extends JPanel implements KeyListener,Runnable {
     private boolean wPressed, sPressed, aPressed, dPressed, jPressed;
     /**
      * 用于修改坦克的方向以及坦克的坐标使其移动
-     * @param e
+     * @param e 键盘
      */
     @Override
     public void keyPressed(KeyEvent e) {

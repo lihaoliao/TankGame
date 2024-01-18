@@ -10,7 +10,7 @@ import pri.llh.tankgame.panel.GamePanel;
  * @date 2023/12/01 09:31
  * @since 1.0
  */
-public class Bullet implements Runnable{
+public class Bullet implements Runnable {
     /**
      * 子弹的横纵坐标
      */
@@ -66,8 +66,8 @@ public class Bullet implements Runnable{
 
     @Override
     public synchronized void run() {
-        while (true){
-            switch (direction){
+        while (true) {
+            switch (direction) {
                 case UP:
                     bullet[1] -= speed;
                     break;
@@ -89,12 +89,12 @@ public class Bullet implements Runnable{
                 e.printStackTrace();
             }
             //子弹还在面板内就没事，超出面板就销毁线程
-            if (!(bullet[0] >= 0 && bullet[0] <= (gamePanel.getScreenWidth()) && bullet[1] >= 0 && bullet[1] <= gamePanel.getScreenHeight())){
+            if (!(bullet[0] >= 0 && bullet[0] <= (gamePanel.getScreenWidth()) && bullet[1] >= 0 && bullet[1] <= gamePanel.getScreenHeight())) {
                 isRunning = false;
                 break;
             }
             //子弹击中目标
-            else if(!isRunning){
+            else if (!isRunning) {
                 break;
             }
         }

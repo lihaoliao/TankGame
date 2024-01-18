@@ -5,8 +5,8 @@ package pri.llh.tankgame.operations;
  * @version 1.0
  * @Package_Name pri.llh.tankgame.operations
  * @date 2023/12/01 16:10
- * @since 1.0
  * @Description 制作被击中时爆炸效果
+ * @since 1.0
  */
 public class Boom {
     private int x;
@@ -19,10 +19,10 @@ public class Boom {
         this.y = y;
     }
 
-    public void lifeDown(){
-        if (life > 0){
+    public void lifeDown() {
+        if (life > 0) {
             life--;
-        }else {
+        } else {
             isRunning = false;
         }
     }

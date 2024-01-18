@@ -14,6 +14,7 @@ import pri.llh.tankgame.tank.Tank;
 public class TankUtils {
     /**
      * 根据坦克的朝向计算其四个角的坐标。
+     *
      * @param tank 坦克对象
      * @return 一个二维数组，包含坦克的四个角的坐标。
      * 数组结构如下：
@@ -34,14 +35,14 @@ public class TankUtils {
         int height = Tank.TANK_TOTAL_HEIGHT;
 
         if (direction == Direction.UP || direction == Direction.DOWN) {
-            return new int[][] {
+            return new int[][]{
                     {x, y},
                     {x + width, y},
                     {x, y + height},
                     {x + width, y + height}
             };
         } else {
-            return new int[][] {
+            return new int[][]{
                     {x, y},
                     {x + height, y},
                     {x, y + width},

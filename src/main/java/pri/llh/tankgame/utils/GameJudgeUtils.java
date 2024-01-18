@@ -53,6 +53,7 @@ public class GameJudgeUtils {
 
     /**
      * 判断坦克是否碰撞，此方法为敌人坦克判断
+     *
      * @param currentTank 当前判断的坦克
      * @param tankVector  所有坦克的列表
      * @return 发生碰撞的坦克或者Null
@@ -73,7 +74,7 @@ public class GameJudgeUtils {
                             return resultTank;
                         }
                         //当前坦克右上角判断在范围内则发生了碰撞
-                        resultTank = RightUpJudge(currentTankRange, otherTank, tankRange);
+                        resultTank = rightUpJudge(currentTankRange, otherTank, tankRange);
                         if (resultTank != null) {
                             return resultTank;
                         }
@@ -87,12 +88,12 @@ public class GameJudgeUtils {
                     int[][] tankRange = TankUtils.tankRange(otherTank);
                     if (!otherTank.equals(currentTank)) {
                         //当前坦克左下角判断在范围内则发生了碰撞
-                        resultTank = LeftDownJudge(currentTankRange, otherTank, tankRange);
+                        resultTank = leftDownJudge(currentTankRange, otherTank, tankRange);
                         if (resultTank != null) {
                             return resultTank;
                         }
                         //当前坦克右下角判断在范围内则发生了碰撞
-                        resultTank = RightDownJudge(currentTankRange, otherTank, tankRange);
+                        resultTank = rightDownJudge(currentTankRange, otherTank, tankRange);
                         if (resultTank != null) {
                             return resultTank;
                         }
@@ -111,7 +112,7 @@ public class GameJudgeUtils {
                             return resultTank;
                         }
                         //当前坦克左下角判断在范围内则发生了碰撞
-                        resultTank = LeftDownJudge(currentTankRange, otherTank, tankRange);
+                        resultTank = leftDownJudge(currentTankRange, otherTank, tankRange);
                         if (resultTank != null) {
                             return resultTank;
                         }
@@ -125,12 +126,12 @@ public class GameJudgeUtils {
                     int[][] tankRange = TankUtils.tankRange(otherTank);
                     if (!otherTank.equals(currentTank)) {
                         //当前坦克右上角判断在范围内则发生了碰撞
-                        resultTank = RightUpJudge(currentTankRange, otherTank, tankRange);
+                        resultTank = rightUpJudge(currentTankRange, otherTank, tankRange);
                         if (resultTank != null) {
                             return resultTank;
                         }
                         //当前坦克右下角判断在范围内则发生了碰撞
-                        resultTank = RightDownJudge(currentTankRange, otherTank, tankRange);
+                        resultTank = rightDownJudge(currentTankRange, otherTank, tankRange);
                         if (resultTank != null) {
                             return resultTank;
                         }
@@ -143,7 +144,7 @@ public class GameJudgeUtils {
         return null;
     }
 
-    private static Tank RightDownJudge(int[][] currentTankRange, Tank otherTank, int[][] tankRange) {
+    private static Tank rightDownJudge(int[][] currentTankRange, Tank otherTank, int[][] tankRange) {
         Tank resultTank;
         if (currentTankRange[3][0] >= tankRange[0][0] &&
                 currentTankRange[3][0] <= tankRange[3][0] &&
@@ -155,7 +156,7 @@ public class GameJudgeUtils {
         return null;
     }
 
-    private static Tank LeftDownJudge(int[][] currentTankRange, Tank otherTank, int[][] tankRange) {
+    private static Tank leftDownJudge(int[][] currentTankRange, Tank otherTank, int[][] tankRange) {
         Tank resultTank;
         if (currentTankRange[2][0] >= tankRange[0][0] &&
                 currentTankRange[2][0] <= tankRange[3][0] &&
@@ -167,7 +168,7 @@ public class GameJudgeUtils {
         return null;
     }
 
-    private static Tank RightUpJudge(int[][] currentTankRange, Tank otherTank, int[][] tankRange) {
+    private static Tank rightUpJudge(int[][] currentTankRange, Tank otherTank, int[][] tankRange) {
         Tank resultTank;
         if (currentTankRange[1][0] >= tankRange[0][0] &&
                 currentTankRange[1][0] <= tankRange[3][0] &&
@@ -194,9 +195,9 @@ public class GameJudgeUtils {
     /**
      * 判断子弹是否击中墙体
      *
-     * @param bullet
-     * @param wall
-     * @return
+     * @param bullet 用于判断的子弹
+     * @param wall 被判断的墙体
+     * @return 是否击中墙体
      */
     public static boolean hitWallJudge(Bullet bullet, Wall wall) {
         int bulletX = bullet.getBullet()[0];

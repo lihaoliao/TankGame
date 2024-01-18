@@ -8,7 +8,7 @@ package pri.llh.tankgame.items;
  * @Description
  * @since 1.0
  */
-public class NormalWall extends Wall{
+public class NormalWall extends Wall {
     public NormalWall(int x, int y) {
         super(x, y);
     }

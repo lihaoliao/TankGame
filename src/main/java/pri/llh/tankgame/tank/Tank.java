@@ -97,11 +97,7 @@ public class Tank {
     }
 
     public void setTankLife(int tankLife) {
-        if (tankLife < 0) {
-            this.tankLife = 0;
-        } else {
-            this.tankLife = tankLife;
-        }
+        this.tankLife = Math.max(tankLife, 0);
     }
 
     public GamePanel getGamePanel() {
@@ -215,7 +211,7 @@ public class Tank {
                     int wallLeftDownY = wall.getY() + wall.getHeight();
                     int wallRightDownX = wall.getX() + wall.getWeight();
                     int wallLeftUpY = wall.getY();
-                    if (preY - speed < wallLeftDownY + 10 && preY - speed > wallLeftUpY + 10&&preDirection != Direction.DOWN) {
+                    if (preY - speed < wallLeftDownY + 10 && preY - speed > wallLeftUpY + 10 && preDirection != Direction.DOWN) {
                         for (int j = x; j <= x + TANK_TOTAL_WIDTH; j++) {
                             if (j >= wallLeftDownX && j <= wallRightDownX) {
                                 y = preY;
@@ -227,8 +223,8 @@ public class Tank {
                     }
                 }
                 enemyTank = GameJudgeUtils.isTouchOtherTank(this, gamePanel.getEnemyTanks());
-                otherPlayerTank = GameJudgeUtils.isTouchOtherTank(this,gamePanel.getPlayerTanks());
-                if(enemyTank != null || otherPlayerTank != null){
+                otherPlayerTank = GameJudgeUtils.isTouchOtherTank(this, gamePanel.getPlayerTanks());
+                if (enemyTank != null || otherPlayerTank != null) {
                     y = preY;
                 }
                 break;
@@ -250,7 +246,7 @@ public class Tank {
                     int wallLeftUpY = wall.getY();
                     int wallRightUpX = wall.getX() + wall.getWeight();
                     int wallLeftDownY = wall.getY() + wall.getHeight();
-                    if (preY + speed + TANK_TOTAL_HEIGHT + 10> wallLeftUpY && preY + speed + TANK_TOTAL_HEIGHT + 10 < wallLeftDownY&&preDirection != Direction.UP) {
+                    if (preY + speed + TANK_TOTAL_HEIGHT + 10 > wallLeftUpY && preY + speed + TANK_TOTAL_HEIGHT + 10 < wallLeftDownY && preDirection != Direction.UP) {
                         for (int j = x; j <= x + TANK_TOTAL_WIDTH; j++) {
                             if (j >= wallLeftUpX && j <= wallRightUpX) {
                                 y = preY;
@@ -263,8 +259,8 @@ public class Tank {
                 }
                 //玩家与敌人碰撞判断
                 enemyTank = GameJudgeUtils.isTouchOtherTank(this, gamePanel.getEnemyTanks());
-                otherPlayerTank = GameJudgeUtils.isTouchOtherTank(this,gamePanel.getPlayerTanks());
-                if(enemyTank != null || otherPlayerTank != null){
+                otherPlayerTank = GameJudgeUtils.isTouchOtherTank(this, gamePanel.getPlayerTanks());
+                if (enemyTank != null || otherPlayerTank != null) {
                     y = preY;
                 }
                 break;
@@ -286,7 +282,7 @@ public class Tank {
                     int wallRightDownY = wall.getY() + wall.getHeight();
                     int wallRightDownX = wall.getX() + wall.getWeight();
                     int wallRightUpY = wall.getY();
-                    if (preX - speed - 10< wallRightDownX && preX - speed - 10 > wallLeftDownX &&preDirection != Direction.RIGHT) {
+                    if (preX - speed - 10 < wallRightDownX && preX - speed - 10 > wallLeftDownX && preDirection != Direction.RIGHT) {
                         for (int j = y; j <= y + TANK_TOTAL_WIDTH; j++) {
                             if (j >= wallRightUpY && j <= wallRightDownY) {
                                 x = preX;
@@ -298,8 +294,8 @@ public class Tank {
                     }
                 }
                 enemyTank = GameJudgeUtils.isTouchOtherTank(this, gamePanel.getEnemyTanks());
-                otherPlayerTank = GameJudgeUtils.isTouchOtherTank(this,gamePanel.getPlayerTanks());
-                if(enemyTank != null || otherPlayerTank != null){
+                otherPlayerTank = GameJudgeUtils.isTouchOtherTank(this, gamePanel.getPlayerTanks());
+                if (enemyTank != null || otherPlayerTank != null) {
                     x = preX;
                 }
                 break;
@@ -321,7 +317,7 @@ public class Tank {
                     int wallRightDownX = wall.getX() + wall.getWeight();
                     int wallLeftUpY = wall.getY();
                     int wallLeftDownY = wall.getY() + wall.getHeight();
-                    if (preX + speed + 10 + TANK_TOTAL_HEIGHT > wallLeftDownX && preX + speed + 10 + TANK_TOTAL_HEIGHT < wallRightDownX &&preDirection != Direction.LEFT) {
+                    if (preX + speed + 10 + TANK_TOTAL_HEIGHT > wallLeftDownX && preX + speed + 10 + TANK_TOTAL_HEIGHT < wallRightDownX && preDirection != Direction.LEFT) {
                         for (int j = y; j <= y + TANK_TOTAL_WIDTH; j++) {
                             if (j >= wallLeftUpY && j <= wallLeftDownY) {
 
@@ -334,8 +330,8 @@ public class Tank {
                     }
                 }
                 enemyTank = GameJudgeUtils.isTouchOtherTank(this, gamePanel.getEnemyTanks());
-                otherPlayerTank = GameJudgeUtils.isTouchOtherTank(this,gamePanel.getPlayerTanks());
-                if(enemyTank != null || otherPlayerTank != null){
+                otherPlayerTank = GameJudgeUtils.isTouchOtherTank(this, gamePanel.getPlayerTanks());
+                if (enemyTank != null || otherPlayerTank != null) {
                     x = preX;
                 }
                 break;
